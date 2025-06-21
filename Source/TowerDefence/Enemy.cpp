@@ -1,26 +1,29 @@
 #include "Enemy.h"
 #include "PathSplineActor.h"
+#include "EnemyAnimInstance.h"
 
 #include "Kismet/GameplayStatics.h"
 #include "Components/SplineComponent.h"
 #include "Components/StaticMeshComponent.h"
+#include "Components/CapsuleComponent.h"
+#include "TimerManager.h"
 
 AEnemy::AEnemy()
 {
 	PrimaryActorTick.bCanEverTick = true;
 
-    MeshComp = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("MeshComp"));
-    SetRootComponent(MeshComp);
-
+    static ConstructorHelpers::FClassFinder<UAnimInstance> AnimBPClass(TEXT("/Game/Blueprints/ABP_Enemy"));
+    if (AnimBPClass.Succeeded())
+    {
+        GetMesh()->SetAnimInstanceClass(AnimBPClass.Class);
+    }
 }
 
 void AEnemy::BeginPlay()
 {
 	Super::BeginPlay();
 	
-    if (APathSplineActor* PathActor = Cast<APathSplineActor>(
-        UGameplayStatics::GetActorOfClass(
-            GetWorld(), APathSplineActor::StaticClass())))
+    if (APathSplineActor* PathActor = Cast<APathSplineActor>(UGameplayStatics::GetActorOfClass(GetWorld(), APathSplineActor::StaticClass())))
     {
         PathSpline = PathActor->GetSplineComponent();
     }
@@ -29,25 +32,29 @@ void AEnemy::BeginPlay()
         UE_LOG(LogTemp, Warning, TEXT("AEnemy::BeginPlay - PathSpline not found!"));
     }
 
-    // 2) 메시 반 높이 계산 (로컬 바운드 × 컴포넌트 Z 스케일)
-    if (MeshComp && MeshComp->GetStaticMesh())
+    if (auto* BI = Cast<UEnemyAnimInstance>(GetMesh()->GetAnimInstance()))
     {
-        float LocalHalfZ = MeshComp->Bounds.BoxExtent.Z;
-        MeshHalfHeight = LocalHalfZ * MeshComp->GetComponentScale().Z;
+        AnimInst = BI;
+    }
+    else
+    {
+        UE_LOG(LogTemp, Warning, TEXT("AnimInstance is not UEnemyAnimInstance"));
     }
 
-    // 3) 시작 위치·회전 초기화 (선택 사항)
+    CapsuleHalfHeight = GetCapsuleComponent()->GetScaledCapsuleHalfHeight();
+
     if (PathSpline)
     {
-        FVector StartPos = PathSpline->GetLocationAtDistanceAlongSpline(
-            0.f, ESplineCoordinateSpace::World);
-        FRotator StartRot = PathSpline->GetRotationAtDistanceAlongSpline(
-            0.f, ESplineCoordinateSpace::World);
+        FVector StartPos = PathSpline->GetLocationAtDistanceAlongSpline(0.f, ESplineCoordinateSpace::World);
+        FRotator StartRot = PathSpline->GetRotationAtDistanceAlongSpline(0.f, ESplineCoordinateSpace::World);
 
-        // 높이 오프셋 적용
-        StartPos.Z += MeshHalfHeight;
-
+        StartPos.Z += CapsuleHalfHeight;
         SetActorLocationAndRotation(StartPos, StartRot);
+    }
+
+    if (AnimInst)
+    {
+        AnimInst->Speed = MoveSpeed;
     }
 }
 
@@ -57,32 +64,63 @@ void AEnemy::Tick(float DeltaTime)
 
     if (!PathSpline) return;
 
-    // 1) 거리 누적
     DistanceAlongSpline += MoveSpeed * DeltaTime;
-
-    // 2) 도착 체크
     float SplineLen = PathSpline->GetSplineLength();
-    if (DistanceAlongSpline >= SplineLen)
+
+    if (DistanceAlongSpline < SplineLen)
     {
-        Destroy();
+        FVector NewPos = PathSpline->GetLocationAtDistanceAlongSpline(
+            DistanceAlongSpline, ESplineCoordinateSpace::World);
+        NewPos.Z += CapsuleHalfHeight;
+        FRotator NewRot = PathSpline->GetRotationAtDistanceAlongSpline(
+            DistanceAlongSpline, ESplineCoordinateSpace::World);
+
+        SetActorLocationAndRotation(NewPos, NewRot);
+
+        if (AnimInst)
+            AnimInst->Speed = MoveSpeed;
+
         return;
     }
 
-    // 3) 스플라인 위치·회전 샘플링
-    FVector NewPos = PathSpline->GetLocationAtDistanceAlongSpline(
-        DistanceAlongSpline, ESplineCoordinateSpace::World);
-    FRotator NewRot = PathSpline->GetRotationAtDistanceAlongSpline(
-        DistanceAlongSpline, ESplineCoordinateSpace::World);
+    MoveSpeed = 0.f;
+    if (AnimInst)
+        AnimInst->Speed = 0.f;
 
-    // 4) Z 오프셋 적용
-    NewPos.Z += MeshHalfHeight;
+    auto& TM = GetWorldTimerManager();
+    if (!TM.IsTimerActive(AttackTimerHandle))
+    {
+        DoAttack();
 
-    // 5) 이동 반영
-    SetActorLocationAndRotation(NewPos, NewRot);
+        TM.SetTimer(
+            AttackTimerHandle,
+            this, &AEnemy::DoAttack,
+            AttackInterval,
+            true
+        );
+    }
 }
 
 void AEnemy::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
 
+}
+
+void AEnemy::DoAttack()
+{
+    if (AnimInst)
+    {
+        float Duration = AnimInst->PlayAttackMontage();
+        UE_LOG(LogTemp, Log, TEXT("AttackMontage played, duration=%.2f"), Duration);
+    }
+    else
+    {
+        UE_LOG(LogTemp, Warning, TEXT("DoAttack: AnimInst is null"));
+    }
+
+    if (AnimInst && AnimInst->AttackMontage)
+    {
+        AnimInst->PlayAttackMontage();
+    }
 }
