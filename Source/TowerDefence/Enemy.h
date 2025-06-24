@@ -2,7 +2,26 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
+#include "Engine/DataTable.h"
 #include "Enemy.generated.h"
+
+USTRUCT(BlueprintType)
+struct FEnemyWaveData : public FTableRowBase
+{
+	GENERATED_BODY();
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Wave")
+	float Health;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Wave")
+	float MoveSpeed;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Wave")
+	float AttackInterval;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Wave")
+	int32 SpawnCount;
+};
 
 UCLASS()
 class TOWERDEFENCE_API AEnemy : public ACharacter
