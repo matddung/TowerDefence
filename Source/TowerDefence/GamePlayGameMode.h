@@ -19,4 +19,7 @@ public:
 
 protected:
 	virtual void BeginPlay() override;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "UI")
+	TSubclassOf<class UGameHUDWidget> GameHUDWidgetClass;
 };

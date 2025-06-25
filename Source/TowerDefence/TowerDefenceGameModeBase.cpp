@@ -26,16 +26,6 @@ void ATowerDefenceGameModeBase::BeginPlay()
         if (Menu)
         {
             Menu->AddToViewport();
-
-            APlayerController* PC = UGameplayStatics::GetPlayerController(this, 0);
-            if (PC)
-            {
-                PC->bShowMouseCursor = true;
-                FInputModeUIOnly InputMode;
-                InputMode.SetWidgetToFocus(Menu->TakeWidget());
-                InputMode.SetLockMouseToViewportBehavior(EMouseLockMode::DoNotLock);
-                PC->SetInputMode(InputMode);
-            }
         }
     }
 }
