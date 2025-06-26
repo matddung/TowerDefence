@@ -42,20 +42,26 @@ public:
 	UPROPERTY()
 	class USplineComponent* PathSpline = nullptr;
 
-	float DistanceAlongSpline = 0.f;
+	float DistanceAlongSpline = 0;
 
-	UPROPERTY(EditAnywhere, Category = "Movement")
-	float MoveSpeed = 3000;
+	float CapsuleHalfHeight = 0;
 
-	float CapsuleHalfHeight = 0.f;
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Enemy")
+	float CurrentHealth = 0;
 
 	UPROPERTY()
 	class UEnemyAnimInstance* AnimInst = nullptr;
 
 	FTimerHandle AttackTimerHandle;
 
-	UPROPERTY(EditAnywhere, Category = "Attack")
-	float AttackInterval = 2;
-
 	void DoAttack();
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Wave")
+	FEnemyWaveData WaveData;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Wave")
+	FName WaveRowName = "Round1";
+
+	UPROPERTY(EditAnywhere, Category = "Wave")
+	UDataTable* WaveDataTable = nullptr;
 };

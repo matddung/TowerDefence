@@ -12,7 +12,7 @@ AEnemy::AEnemy()
 {
 	PrimaryActorTick.bCanEverTick = true;
 
-    static ConstructorHelpers::FClassFinder<UAnimInstance> AnimBPClass(TEXT("/Game/Blueprints/ABP_Enemy"));
+    static ConstructorHelpers::FClassFinder<UAnimInstance> AnimBPClass(TEXT("/Game/Blueprints/Enemy/ABP_Enemy"));
     if (AnimBPClass.Succeeded())
     {
         GetMesh()->SetAnimInstanceClass(AnimBPClass.Class);
@@ -23,10 +23,32 @@ void AEnemy::BeginPlay()
 {
 	Super::BeginPlay();
 	
+    if (WaveDataTable)
+    {
+        const FEnemyWaveData* Data = WaveDataTable->FindRow<FEnemyWaveData>(WaveRowName, TEXT("EnemyWaveData Lookup"));
+        if (Data)
+        {
+            WaveData = *Data;
+            CurrentHealth = WaveData.Health;
+
+            UE_LOG(LogTemp, Log, TEXT("WaveData loaded: Health=%.1f, Speed=%.1f, AttackInterval=%.1f"),
+                WaveData.Health, WaveData.MoveSpeed, WaveData.AttackInterval);
+        }
+        else
+        {
+            UE_LOG(LogTemp, Error, TEXT("WaveData row '%s' not found!"), *WaveRowName.ToString());
+        }
+    }
+    else
+    {
+        UE_LOG(LogTemp, Error, TEXT("WaveDataTable not assigned in AEnemy!"));
+
+    }
     if (APathSplineActor* PathActor = Cast<APathSplineActor>(UGameplayStatics::GetActorOfClass(GetWorld(), APathSplineActor::StaticClass())))
     {
         PathSpline = PathActor->GetSplineComponent();
     }
+
     if (!PathSpline)
     {
         UE_LOG(LogTemp, Warning, TEXT("AEnemy::BeginPlay - PathSpline not found!"));
@@ -54,7 +76,7 @@ void AEnemy::BeginPlay()
 
     if (AnimInst)
     {
-        AnimInst->Speed = MoveSpeed;
+        AnimInst->Speed = WaveData.MoveSpeed;
     }
 }
 
@@ -64,26 +86,23 @@ void AEnemy::Tick(float DeltaTime)
 
     if (!PathSpline) return;
 
-    DistanceAlongSpline += MoveSpeed * DeltaTime;
+    DistanceAlongSpline += WaveData.MoveSpeed * DeltaTime;
     float SplineLen = PathSpline->GetSplineLength();
 
     if (DistanceAlongSpline < SplineLen)
     {
-        FVector NewPos = PathSpline->GetLocationAtDistanceAlongSpline(
-            DistanceAlongSpline, ESplineCoordinateSpace::World);
+        FVector NewPos = PathSpline->GetLocationAtDistanceAlongSpline(DistanceAlongSpline, ESplineCoordinateSpace::World);
         NewPos.Z += CapsuleHalfHeight;
-        FRotator NewRot = PathSpline->GetRotationAtDistanceAlongSpline(
-            DistanceAlongSpline, ESplineCoordinateSpace::World);
+        FRotator NewRot = PathSpline->GetRotationAtDistanceAlongSpline(DistanceAlongSpline, ESplineCoordinateSpace::World);
 
         SetActorLocationAndRotation(NewPos, NewRot);
 
         if (AnimInst)
-            AnimInst->Speed = MoveSpeed;
+            AnimInst->Speed = WaveData.MoveSpeed;
 
         return;
     }
 
-    MoveSpeed = 0.f;
     if (AnimInst)
         AnimInst->Speed = 0.f;
 
@@ -95,7 +114,7 @@ void AEnemy::Tick(float DeltaTime)
         TM.SetTimer(
             AttackTimerHandle,
             this, &AEnemy::DoAttack,
-            AttackInterval,
+            WaveData.AttackInterval,
             true
         );
     }
