@@ -1,10 +1,14 @@
 #include "GamePlayGameMode.h"
 #include "TDPlayerController.h"
 #include "GameHUDWidget.h"
+#include "Enemy.h"
+#include "Portal.h"
 
 #include "EngineUtils.h"
 #include "Camera/CameraActor.h"
 #include "Blueprint/UserWidget.h"
+#include "Engine/DataTable.h"
+#include "Kismet/GameplayStatics.h"
 
 AGamePlayGameMode::AGamePlayGameMode()
 {
@@ -14,6 +18,18 @@ AGamePlayGameMode::AGamePlayGameMode()
     if (HUDWidgetBPClass.Succeeded())
     {
         GameHUDWidgetClass = HUDWidgetBPClass.Class;
+    }
+
+    static ConstructorHelpers::FObjectFinder<UDataTable> WaveDataObj(TEXT("/Game/Data/EnemyWaveData.EnemyWaveData"));
+    if (WaveDataObj.Succeeded())
+    {
+        WaveDataTable = WaveDataObj.Object;
+    }
+
+    static ConstructorHelpers::FClassFinder<AEnemy> EnemyBPClass(TEXT("/Game/Blueprints/Enemy/BP_Enemy"));
+    if (EnemyBPClass.Succeeded())
+    {
+        EnemyClass = EnemyBPClass.Class;
     }
 }
 
@@ -38,5 +54,69 @@ void AGamePlayGameMode::BeginPlay()
         {
             HUD->AddToViewport();
         }
+    }
+}
+
+void AGamePlayGameMode::StartNextWave()
+{
+    ++CurrentWave;
+
+    if (!WaveDataTable)
+    {
+        UE_LOG(LogTemp, Warning, TEXT("WaveDataTable is null"));
+        return;
+    }
+
+    FName RowName = FName(*FString::Printf(TEXT("Round%d"), CurrentWave));
+    const FEnemyWaveData* Data = WaveDataTable->FindRow<FEnemyWaveData>(RowName, TEXT("StartNextWave Lookup"));
+    if (!Data)
+    {
+        UE_LOG(LogTemp, Warning, TEXT("Wave row '%s' not found"), *RowName.ToString());
+        return;
+    }
+
+    UE_LOG(LogTemp, Log, TEXT("Starting Wave %d - SpawnCount: %d"), CurrentWave, Data->SpawnCount);
+
+    SpawnPortal = Cast<APortal>(UGameplayStatics::GetActorOfClass(this, APortal::StaticClass()));
+    if (!SpawnPortal)
+    {
+        UE_LOG(LogTemp, Warning, TEXT("Portal not found"));
+        return;
+    }
+
+    RemainingSpawnCount = Data->SpawnCount;
+    CurrentWaveRowName = RowName;
+
+    SpawnEnemy();
+    GetWorldTimerManager().SetTimer(SpawnTimerHandle, this, &AGamePlayGameMode::SpawnEnemy, 2.0f, true);
+}
+
+void AGamePlayGameMode::SpawnEnemy()
+{
+    if (RemainingSpawnCount <= 0)
+    {
+        GetWorldTimerManager().ClearTimer(SpawnTimerHandle);
+        return;
+    }
+
+    if (!SpawnPortal)
+    {
+        UE_LOG(LogTemp, Warning, TEXT("SpawnEnemy: Portal is null"));
+        GetWorldTimerManager().ClearTimer(SpawnTimerHandle);
+        return;
+    }
+
+    FVector SpawnLoc = SpawnPortal->GetActorLocation();
+    FRotator SpawnRot = SpawnPortal->GetActorRotation();
+    if (AEnemy* NewEnemy = GetWorld()->SpawnActor<AEnemy>(EnemyClass, SpawnLoc, SpawnRot))
+    {
+        NewEnemy->WaveDataTable = WaveDataTable;
+        NewEnemy->WaveRowName = CurrentWaveRowName;
+    }
+
+    --RemainingSpawnCount;
+    if (RemainingSpawnCount <= 0)
+    {
+        GetWorldTimerManager().ClearTimer(SpawnTimerHandle);
     }
 }

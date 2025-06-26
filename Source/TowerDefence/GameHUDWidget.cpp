@@ -1,4 +1,5 @@
 #include "GameHUDWidget.h"
+#include "GamePlayGameMode.h"
 
 #include "Components/Button.h"
 #include "Components/WidgetSwitcher.h"
@@ -18,21 +19,21 @@ void UGameHUDWidget::NativeConstruct()
         UTooltipWidget* AttackTip = CreateWidget<UTooltipWidget>(this, TooltipWidgetClass);
         if (AttackTip)
         {
-            AttackTip->SetTooltipText(FText::FromString("Attack Tower\nCost: 100 Gold"));
+            AttackTip->SetTooltipText(FText::FromString("Basic Attack Tower\nCost: 100 Gold"));
             AttackBuildingButton->SetToolTip(AttackTip);
         }
 
         UTooltipWidget* SplashTip = CreateWidget<UTooltipWidget>(this, TooltipWidgetClass);
         if (SplashTip)
         {
-            SplashTip->SetTooltipText(FText::FromString("Splash Tower\nCost: 150 Gold"));
+            SplashTip->SetTooltipText(FText::FromString("Splash Attack Tower\nCost: 150 Gold"));
             SplashBuildingButton->SetToolTip(SplashTip);
         }
 
         UTooltipWidget* CCTip = CreateWidget<UTooltipWidget>(this, TooltipWidgetClass);
         if (CCTip)
         {
-            CCTip->SetTooltipText(FText::FromString("CC Tower\nCost: 120 Gold\nSlows enemies"));
+            CCTip->SetTooltipText(FText::FromString("Put on CC Tower\nCost: 120 Gold\nSlows enemies"));
             CCBuildingButton->SetToolTip(CCTip);
         }
     }
@@ -75,6 +76,10 @@ void UGameHUDWidget::NativeConstruct()
 void UGameHUDWidget::OnStartClicked()
 {
     UE_LOG(LogTemp, Log, TEXT("Start button clicked"));
+    if (AGamePlayGameMode* GM = GetWorld()->GetAuthGameMode<AGamePlayGameMode>())
+    {
+        GM->StartNextWave();
+    }
 }
 
 void UGameHUDWidget::OnBuildClicked()
