@@ -114,3 +114,11 @@ void UGameHUDWidget::OnCCClicked()
 {
     UE_LOG(LogTemp, Log, TEXT("Build CC button clicked"));
 }
+
+void UGameHUDWidget::SetStartButtonEnabled(bool bEnabled)
+{
+    if (StartRoundButton)
+    {
+        StartRoundButton->SetIsEnabled(bEnabled);
+    }
+}

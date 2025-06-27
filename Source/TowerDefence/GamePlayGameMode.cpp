@@ -20,7 +20,7 @@ AGamePlayGameMode::AGamePlayGameMode()
         GameHUDWidgetClass = HUDWidgetBPClass.Class;
     }
 
-    static ConstructorHelpers::FObjectFinder<UDataTable> WaveDataObj(TEXT("/Game/Data/EnemyWaveData.EnemyWaveData"));
+    static ConstructorHelpers::FObjectFinder<UDataTable> WaveDataObj(TEXT("/Game/Data/EnemyWaveData"));
     if (WaveDataObj.Succeeded())
     {
         WaveDataTable = WaveDataObj.Object;
@@ -59,6 +59,16 @@ void AGamePlayGameMode::BeginPlay()
 
 void AGamePlayGameMode::StartNextWave()
 {
+    if (AliveEnemyCount > 0)
+    {
+        UE_LOG(LogTemp, Log, TEXT("Cannot start next wave - %d enemies remain"), AliveEnemyCount);
+        if (GameHUDWidget)
+        {
+            GameHUDWidget->SetStartButtonEnabled(false);
+        }
+        return;
+    }
+
     ++CurrentWave;
 
     if (!WaveDataTable)
@@ -87,6 +97,11 @@ void AGamePlayGameMode::StartNextWave()
     RemainingSpawnCount = Data->SpawnCount;
     CurrentWaveRowName = RowName;
 
+    if (GameHUDWidget)
+    {
+        GameHUDWidget->SetStartButtonEnabled(false);
+    }
+
     SpawnEnemy();
     GetWorldTimerManager().SetTimer(SpawnTimerHandle, this, &AGamePlayGameMode::SpawnEnemy, 2.0f, true);
 }
@@ -112,11 +127,26 @@ void AGamePlayGameMode::SpawnEnemy()
     {
         NewEnemy->WaveDataTable = WaveDataTable;
         NewEnemy->WaveRowName = CurrentWaveRowName;
+        NewEnemy->OnDestroyed.AddDynamic(this, &AGamePlayGameMode::HandleEnemyDestroyed);
+        ++AliveEnemyCount;
     }
 
     --RemainingSpawnCount;
     if (RemainingSpawnCount <= 0)
     {
         GetWorldTimerManager().ClearTimer(SpawnTimerHandle);
+    }
+}
+
+void AGamePlayGameMode::HandleEnemyDestroyed(AActor* DestroyedActor)
+{
+    --AliveEnemyCount;
+    if (AliveEnemyCount <= 0)
+    {
+        AliveEnemyCount = 0;
+        if (GameHUDWidget)
+        {
+            GameHUDWidget->SetStartButtonEnabled(true);
+        }
     }
 }

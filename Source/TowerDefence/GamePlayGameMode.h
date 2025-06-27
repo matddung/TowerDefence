@@ -1,14 +1,9 @@
-// Fill out your copyright notice in the Description page of Project Settings.
-
 #pragma once
 
 #include "CoreMinimal.h"
 #include "GameFramework/GameModeBase.h"
 #include "GamePlayGameMode.generated.h"
 
-/**
- * 
- */
 UCLASS()
 class TOWERDEFENCE_API AGamePlayGameMode : public AGameModeBase
 {
@@ -22,6 +17,9 @@ public:
 
 	UFUNCTION()
 	void SpawnEnemy();
+
+	UFUNCTION()
+	void HandleEnemyDestroyed(AActor* DestroyedActor);
 
 protected:
 	virtual void BeginPlay() override;
@@ -44,4 +42,9 @@ protected:
 	FTimerHandle SpawnTimerHandle;
 	int32 RemainingSpawnCount = 0;
 	FName CurrentWaveRowName;
+
+	UPROPERTY()
+	class UGameHUDWidget* GameHUDWidget = nullptr;
+
+	int32 AliveEnemyCount = 0;
 };

@@ -17,7 +17,6 @@ class TOWERDEFENCE_API UGameHUDWidget : public UUserWidget
 public:
     virtual void NativeConstruct() override;
 
-protected:
     UFUNCTION()
     void OnStartClicked();
 
@@ -35,6 +34,8 @@ protected:
 
     UFUNCTION()
     void OnCCClicked();
+
+    void SetStartButtonEnabled(bool bEnabled);
 
     UPROPERTY(meta = (BindWidget))
     class UWidgetSwitcher* MenuSwitcher;

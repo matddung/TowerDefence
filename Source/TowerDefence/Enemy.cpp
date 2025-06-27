@@ -109,14 +109,15 @@ void AEnemy::Tick(float DeltaTime)
     auto& TM = GetWorldTimerManager();
     if (!TM.IsTimerActive(AttackTimerHandle))
     {
-        DoAttack();
+        /*DoAttack();
 
         TM.SetTimer(
             AttackTimerHandle,
             this, &AEnemy::DoAttack,
             WaveData.AttackInterval,
             true
-        );
+        );*/
+        Destroy();
     }
 }
 
