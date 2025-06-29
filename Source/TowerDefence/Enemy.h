@@ -39,6 +39,8 @@ public:
 
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
+	virtual float TakeDamage(float DamageAmount, struct FDamageEvent const& DamageEvent, class AController* EventInstigator, AActor* DamageCauser) override;
+
 	UPROPERTY()
 	class USplineComponent* PathSpline = nullptr;
 
@@ -69,4 +71,7 @@ public:
 	class UWidgetComponent* HPBarWidget = nullptr;
 
 	void UpdateHPBar();
+
+	FTimerHandle DamageTimerHandle; // Ãß°¡
+	void ApplyTestDamage();
 };

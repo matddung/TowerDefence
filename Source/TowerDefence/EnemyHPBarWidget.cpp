@@ -7,22 +7,22 @@ void UEnemyHPBarWidget::NativeConstruct()
 {
     Super::NativeConstruct();
 
-    if (!HPBar)
+    if (!PB_HPBar)
     {
-        HPBar = WidgetTree->ConstructWidget<UProgressBar>(UProgressBar::StaticClass(), TEXT("HPBar"));
-        WidgetTree->RootWidget = HPBar;
+        PB_HPBar = WidgetTree->ConstructWidget<UProgressBar>(UProgressBar::StaticClass(), TEXT("HPBar"));
+        WidgetTree->RootWidget = PB_HPBar;
     }
 
-    if (HPBar)
+    if (PB_HPBar)
     {
-        HPBar->SetPercent(1.0f);
+        PB_HPBar->SetPercent(1.0f);
     }
 }
 
 void UEnemyHPBarWidget::SetHPPercent(float Percent)
 {
-    if (HPBar)
+    if (PB_HPBar)
     {
-        HPBar->SetPercent(Percent);
+        PB_HPBar->SetPercent(Percent);
     }
 }

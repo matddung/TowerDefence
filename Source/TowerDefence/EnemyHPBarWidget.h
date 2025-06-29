@@ -20,6 +20,6 @@ public:
     void SetHPPercent(float Percent);
 
 protected:
-    UPROPERTY()
-    class UProgressBar* HPBar = nullptr;
+    UPROPERTY(meta = (BindWidget))
+    class UProgressBar* PB_HPBar;
 };

@@ -39,37 +39,17 @@ void AEnemy::BeginPlay()
         {
             WaveData = *Data;
             CurrentHealth = WaveData.Health;
-
-            UE_LOG(LogTemp, Log, TEXT("WaveData loaded: Health=%.1f, Speed=%.1f, AttackInterval=%.1f"),
-                WaveData.Health, WaveData.MoveSpeed, WaveData.AttackInterval);
-        }
-        else
-        {
-            UE_LOG(LogTemp, Error, TEXT("WaveData row '%s' not found!"), *WaveRowName.ToString());
         }
     }
-    else
-    {
-        UE_LOG(LogTemp, Error, TEXT("WaveDataTable not assigned in AEnemy!"));
 
-    }
     if (APathSplineActor* PathActor = Cast<APathSplineActor>(UGameplayStatics::GetActorOfClass(GetWorld(), APathSplineActor::StaticClass())))
     {
         PathSpline = PathActor->GetSplineComponent();
     }
 
-    if (!PathSpline)
-    {
-        UE_LOG(LogTemp, Warning, TEXT("AEnemy::BeginPlay - PathSpline not found!"));
-    }
-
     if (auto* BI = Cast<UEnemyAnimInstance>(GetMesh()->GetAnimInstance()))
     {
         AnimInst = BI;
-    }
-    else
-    {
-        UE_LOG(LogTemp, Warning, TEXT("AnimInstance is not UEnemyAnimInstance"));
     }
 
     CapsuleHalfHeight = GetCapsuleComponent()->GetScaledCapsuleHalfHeight();
@@ -89,6 +69,14 @@ void AEnemy::BeginPlay()
     }
 
     UpdateHPBar();
+
+    GetWorldTimerManager().SetTimer(
+        DamageTimerHandle,
+        this,
+        &AEnemy::ApplyTestDamage,
+        1.0f,
+        true
+    );
 }
 
 void AEnemy::Tick(float DeltaTime)
@@ -120,15 +108,14 @@ void AEnemy::Tick(float DeltaTime)
     auto& TM = GetWorldTimerManager();
     if (!TM.IsTimerActive(AttackTimerHandle))
     {
-        /*DoAttack();
+        DoAttack();
 
         TM.SetTimer(
             AttackTimerHandle,
             this, &AEnemy::DoAttack,
             WaveData.AttackInterval,
             true
-        );*/
-        Destroy();
+        );
     }
 }
 
@@ -138,16 +125,38 @@ void AEnemy::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 
 }
 
+float AEnemy::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent,
+    AController* EventInstigator, AActor* DamageCauser)
+{
+    const float ActualDamage = Super::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser);
+    if (ActualDamage <= 0.f)
+    {
+        return 0.f;
+    }
+
+    CurrentHealth -= ActualDamage;
+    CurrentHealth = FMath::Max(CurrentHealth, 0.f);
+
+    UpdateHPBar();
+
+    if (CurrentHealth <= 0.f)
+    {
+        if (AnimInst)
+        {
+            AnimInst->SetDeadAnim();
+        }
+
+        Destroy();
+    }
+
+    return ActualDamage;
+}
+
 void AEnemy::DoAttack()
 {
     if (AnimInst)
     {
         float Duration = AnimInst->PlayAttackMontage();
-        UE_LOG(LogTemp, Log, TEXT("AttackMontage played, duration=%.2f"), Duration);
-    }
-    else
-    {
-        UE_LOG(LogTemp, Warning, TEXT("DoAttack: AnimInst is null"));
     }
 
     if (AnimInst && AnimInst->AttackMontage)
@@ -166,4 +175,10 @@ void AEnemy::UpdateHPBar()
             Widget->SetHPPercent(CurrentHealth / MaxHealth);
         }
     }
+}
+
+void AEnemy::ApplyTestDamage()
+{
+    FDamageEvent DamageEvent;
+    TakeDamage(7.f, DamageEvent, nullptr, nullptr);
 }

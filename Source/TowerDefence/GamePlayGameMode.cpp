@@ -61,7 +61,6 @@ void AGamePlayGameMode::StartNextWave()
 {
     if (AliveEnemyCount > 0)
     {
-        UE_LOG(LogTemp, Log, TEXT("Cannot start next wave - %d enemies remain"), AliveEnemyCount);
         if (GameHUDWidget)
         {
             GameHUDWidget->SetStartButtonEnabled(false);
@@ -73,7 +72,6 @@ void AGamePlayGameMode::StartNextWave()
 
     if (!WaveDataTable)
     {
-        UE_LOG(LogTemp, Warning, TEXT("WaveDataTable is null"));
         return;
     }
 
@@ -81,16 +79,12 @@ void AGamePlayGameMode::StartNextWave()
     const FEnemyWaveData* Data = WaveDataTable->FindRow<FEnemyWaveData>(RowName, TEXT("StartNextWave Lookup"));
     if (!Data)
     {
-        UE_LOG(LogTemp, Warning, TEXT("Wave row '%s' not found"), *RowName.ToString());
         return;
     }
-
-    UE_LOG(LogTemp, Log, TEXT("Starting Wave %d - SpawnCount: %d"), CurrentWave, Data->SpawnCount);
 
     SpawnPortal = Cast<APortal>(UGameplayStatics::GetActorOfClass(this, APortal::StaticClass()));
     if (!SpawnPortal)
     {
-        UE_LOG(LogTemp, Warning, TEXT("Portal not found"));
         return;
     }
 
@@ -116,7 +110,6 @@ void AGamePlayGameMode::SpawnEnemy()
 
     if (!SpawnPortal)
     {
-        UE_LOG(LogTemp, Warning, TEXT("SpawnEnemy: Portal is null"));
         GetWorldTimerManager().ClearTimer(SpawnTimerHandle);
         return;
     }
