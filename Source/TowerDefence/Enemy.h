@@ -72,6 +72,11 @@ public:
 
 	void UpdateHPBar();
 
-	FTimerHandle DamageTimerHandle; // Ãß°¡
+	UPROPERTY(EditAnywhere, Category = "DamageText")
+	TSubclassOf<class AFloatingSpawnActor> DamageTextActorClass;
+
+	void SpawnDamageText(AActor* DamagedActor, float Damage);
+
+	FTimerHandle DamageTimerHandle;
 	void ApplyTestDamage();
 };

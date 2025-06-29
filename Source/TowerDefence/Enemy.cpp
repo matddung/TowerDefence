@@ -2,6 +2,7 @@
 #include "PathSplineActor.h"
 #include "EnemyAnimInstance.h"
 #include "EnemyHPBarWidget.h"
+#include "FloatingSpawnActor.h"
 
 #include "Kismet/GameplayStatics.h"
 #include "Components/SplineComponent.h"
@@ -25,6 +26,12 @@ AEnemy::AEnemy()
     if (AnimBPClass.Succeeded())
     {
         GetMesh()->SetAnimInstanceClass(AnimBPClass.Class);
+    }
+
+    static ConstructorHelpers::FClassFinder<AFloatingSpawnActor> DamageTextBPClass(TEXT("/Game/UI/BP_FloatingSpawnActor.BP_FloatingSpawnActor"));
+    if (DamageTextBPClass.Succeeded())
+    {
+        DamageTextActorClass = DamageTextBPClass.Class;
     }
 }
 
@@ -137,6 +144,8 @@ float AEnemy::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent,
     CurrentHealth -= ActualDamage;
     CurrentHealth = FMath::Max(CurrentHealth, 0.f);
 
+    SpawnDamageText(this, ActualDamage);
+
     UpdateHPBar();
 
     if (CurrentHealth <= 0.f)
@@ -181,4 +190,30 @@ void AEnemy::ApplyTestDamage()
 {
     FDamageEvent DamageEvent;
     TakeDamage(7.f, DamageEvent, nullptr, nullptr);
+}
+
+void AEnemy::SpawnDamageText(AActor* DamagedActor, float Damage)
+{
+    if (!DamageTextActorClass)
+    {
+        UE_LOG(LogTemp, Error, TEXT("DamageTextActorClass is nullptr"));
+    }
+    if (!DamagedActor)
+    {
+        UE_LOG(LogTemp, Error, TEXT("DamagedActor is nullptr"));
+    }
+    if (!DamageTextActorClass || !DamagedActor)
+    {
+        return;
+    }
+
+    FVector TargetLocation = DamagedActor->GetActorLocation() + FVector(0.f, 0.f, 100.f);
+    FActorSpawnParameters Params;
+    Params.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
+
+    AFloatingSpawnActor* DamageText = GetWorld()->SpawnActor<AFloatingSpawnActor>(DamageTextActorClass, TargetLocation, FRotator::ZeroRotator, Params);
+    if (DamageText)
+    {
+        DamageText->SetDamage(Damage);
+    }
 }
