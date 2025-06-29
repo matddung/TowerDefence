@@ -1,16 +1,25 @@
 #include "Enemy.h"
 #include "PathSplineActor.h"
 #include "EnemyAnimInstance.h"
+#include "EnemyHPBarWidget.h"
 
 #include "Kismet/GameplayStatics.h"
 #include "Components/SplineComponent.h"
 #include "Components/StaticMeshComponent.h"
 #include "Components/CapsuleComponent.h"
 #include "TimerManager.h"
+#include "Components/WidgetComponent.h"
 
 AEnemy::AEnemy()
 {
-	PrimaryActorTick.bCanEverTick = true;
+    PrimaryActorTick.bCanEverTick = true;
+
+    HPBarWidget = CreateDefaultSubobject<UWidgetComponent>(TEXT("HPBar"));
+    HPBarWidget->SetupAttachment(RootComponent);
+    HPBarWidget->SetWidgetSpace(EWidgetSpace::Screen);
+    HPBarWidget->SetDrawSize(FVector2D(100.f, 10.f));
+    HPBarWidget->SetRelativeLocation(FVector(0.f, 0.f, 100.f));
+    HPBarWidget->SetWidgetClass(UEnemyHPBarWidget::StaticClass());
 
     static ConstructorHelpers::FClassFinder<UAnimInstance> AnimBPClass(TEXT("/Game/Blueprints/Enemy/ABP_Enemy"));
     if (AnimBPClass.Succeeded())
@@ -21,8 +30,8 @@ AEnemy::AEnemy()
 
 void AEnemy::BeginPlay()
 {
-	Super::BeginPlay();
-	
+    Super::BeginPlay();
+
     if (WaveDataTable)
     {
         const FEnemyWaveData* Data = WaveDataTable->FindRow<FEnemyWaveData>(WaveRowName, TEXT("EnemyWaveData Lookup"));
@@ -78,11 +87,13 @@ void AEnemy::BeginPlay()
     {
         AnimInst->Speed = WaveData.MoveSpeed;
     }
+
+    UpdateHPBar();
 }
 
 void AEnemy::Tick(float DeltaTime)
 {
-	Super::Tick(DeltaTime);
+    Super::Tick(DeltaTime);
 
     if (!PathSpline) return;
 
@@ -123,7 +134,7 @@ void AEnemy::Tick(float DeltaTime)
 
 void AEnemy::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
-	Super::SetupPlayerInputComponent(PlayerInputComponent);
+    Super::SetupPlayerInputComponent(PlayerInputComponent);
 
 }
 
@@ -142,5 +153,17 @@ void AEnemy::DoAttack()
     if (AnimInst && AnimInst->AttackMontage)
     {
         AnimInst->PlayAttackMontage();
+    }
+}
+
+void AEnemy::UpdateHPBar()
+{
+    if (HPBarWidget)
+    {
+        if (UEnemyHPBarWidget* Widget = Cast<UEnemyHPBarWidget>(HPBarWidget->GetUserWidgetObject()))
+        {
+            float MaxHealth = FMath::Max(WaveData.Health, 1.0f);
+            Widget->SetHPPercent(CurrentHealth / MaxHealth);
+        }
     }
 }

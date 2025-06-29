@@ -64,4 +64,9 @@ public:
 
 	UPROPERTY(EditAnywhere, Category = "Wave")
 	UDataTable* WaveDataTable = nullptr;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "UI")
+	class UWidgetComponent* HPBarWidget = nullptr;
+
+	void UpdateHPBar();
 };
