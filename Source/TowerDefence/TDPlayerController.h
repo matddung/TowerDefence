@@ -6,14 +6,11 @@
 #include "GameFramework/PlayerController.h"
 #include "TDPlayerController.generated.h"
 
-/**
- * 
- */
 UCLASS()
 class TOWERDEFENCE_API ATDPlayerController : public APlayerController
 {
 	GENERATED_BODY()
-	
+
 protected:
     virtual void BeginPlay() override;
 };

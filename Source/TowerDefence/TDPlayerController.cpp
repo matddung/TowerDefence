@@ -1,4 +1,8 @@
 #include "TDPlayerController.h"
+#include "TowerBase.h"
+#include "TowerPlacementIndicator.h"
+
+#include "Kismet/GameplayStatics.h"
 
 void ATDPlayerController::BeginPlay()
 {

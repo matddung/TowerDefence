@@ -28,7 +28,7 @@ AEnemy::AEnemy()
         GetMesh()->SetAnimInstanceClass(AnimBPClass.Class);
     }
 
-    static ConstructorHelpers::FClassFinder<AFloatingSpawnActor> DamageTextBPClass(TEXT("/Game/UI/BP_FloatingSpawnActor.BP_FloatingSpawnActor"));
+    static ConstructorHelpers::FClassFinder<AFloatingSpawnActor> DamageTextBPClass(TEXT("/Game/UI/BP_FloatingSpawnActor.BP_FloatingSpawnActor_C"));
     if (DamageTextBPClass.Succeeded())
     {
         DamageTextActorClass = DamageTextBPClass.Class;

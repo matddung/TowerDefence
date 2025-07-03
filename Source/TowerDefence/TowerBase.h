@@ -19,12 +19,6 @@ struct FTowerData : public FTableRowBase
 	GENERATED_BODY()
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
-	ETowerType TowerType;
-
-	UPROPERTY(EditAnywhere, BlueprintReadOnly)
-	int32 Level;
-
-	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	int32 TowerCost;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)

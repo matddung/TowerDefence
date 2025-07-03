@@ -1,5 +1,7 @@
 #include "GameHUDWidget.h"
 #include "GamePlayGameMode.h"
+#include "TDPlayerController.h"
+#include "TowerBase.h"
 
 #include "Components/Button.h"
 #include "Components/WidgetSwitcher.h"
