@@ -36,10 +36,25 @@ class TOWERDEFENCE_API ATowerBase : public AActor
 {
 	GENERATED_BODY()
 	
-public:	
+public:
 	ATowerBase();
 
 	virtual void BeginPlay() override;
+	virtual void Tick(float DeltaTime) override;
+
+protected:
+	// 회전 및 타겟팅 관련 함수
+	virtual void FindTargetEnemy();
+	virtual void RotateToTarget(float DeltaTime);
+
+protected:
+	UPROPERTY()
+	class AEnemy* CurrentTarget;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Combat")
+	float TargetingRange = 6000.0f;
+
+	FTimerHandle SearchTimerHandle;
 
 public:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Tower")
