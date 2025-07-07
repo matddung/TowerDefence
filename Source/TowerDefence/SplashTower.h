@@ -14,5 +14,9 @@ class TOWERDEFENCE_API ASplashTower : public ATowerBase
 {
 	GENERATED_BODY()
 	
+public:
+	ASplashTower();
 
+protected:
+	virtual void BeginPlay() override;
 };

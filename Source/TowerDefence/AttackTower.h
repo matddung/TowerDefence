@@ -9,4 +9,10 @@ class TOWERDEFENCE_API AAttackTower : public ATowerBase
 {
 	GENERATED_BODY()
 	
+public:
+	AAttackTower();
+
+protected:
+	virtual void BeginPlay() override;
+
 };

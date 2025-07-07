@@ -14,4 +14,9 @@ class TOWERDEFENCE_API ACCTower : public ATowerBase
 {
 	GENERATED_BODY()
 
+public:
+	ACCTower();
+
+protected:
+	virtual void BeginPlay() override;
 };
