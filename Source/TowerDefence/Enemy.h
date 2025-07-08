@@ -10,17 +10,20 @@ struct FEnemyWaveData : public FTableRowBase
 {
 	GENERATED_BODY();
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Wave")
-	float Health;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	float MaxHealth;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Wave")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	float MoveSpeed;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Wave")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	float AttackInterval;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Wave")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	int32 SpawnCount;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	float SpawnInterval;
 };
 
 UCLASS()

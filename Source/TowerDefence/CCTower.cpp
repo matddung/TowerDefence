@@ -11,15 +11,15 @@ ACCTower::ACCTower()
 
 void ACCTower::BeginPlay()
 {
+    Super::BeginPlay();
+
     if (TowerDataTable)
     {
-        const FTowerData* Data = TowerDataTable->FindRow<FTowerData>(TowerRowName, TEXT("TowerData Lookup"));
+        const FCCTowerData* Data = TowerDataTable->FindRow<FCCTowerData>(TowerRowName, TEXT("TowerData Lookup"));
         if (Data)
         {
             TowerData = *Data;
-            TargetingRange = TowerData.Range;
+            TargetingRange = TowerData.AttackRange;
         }
     }
-
-    Super::BeginPlay();
 }

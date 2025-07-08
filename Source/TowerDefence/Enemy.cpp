@@ -45,7 +45,7 @@ void AEnemy::BeginPlay()
         if (Data)
         {
             WaveData = *Data;
-            CurrentHealth = WaveData.Health;
+            CurrentHealth = WaveData.MaxHealth;
         }
     }
 
@@ -172,7 +172,7 @@ void AEnemy::UpdateHPBar()
     {
         if (UEnemyHPBarWidget* Widget = Cast<UEnemyHPBarWidget>(HPBarWidget->GetUserWidgetObject()))
         {
-            float MaxHealth = FMath::Max(WaveData.Health, 1.0f);
+            float MaxHealth = FMath::Max(WaveData.MaxHealth, 1.0f);
             Widget->SetHPPercent(CurrentHealth / MaxHealth);
         }
     }

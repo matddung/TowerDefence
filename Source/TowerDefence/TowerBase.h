@@ -5,24 +5,6 @@
 #include "Engine/DataTable.h"
 #include "TowerBase.generated.h"
 
-USTRUCT(BlueprintType)
-struct FTowerData : public FTableRowBase
-{
-	GENERATED_BODY()
-
-	UPROPERTY(EditAnywhere, BlueprintReadOnly)
-	int32 TowerCost;
-
-	UPROPERTY(EditAnywhere, BlueprintReadOnly)
-	int32 Damage;
-
-	UPROPERTY(EditAnywhere, BlueprintReadOnly)
-	float Range;
-
-	UPROPERTY(EditAnywhere, BlueprintReadOnly)
-	float AttackInterval;
-};
-
 UCLASS()
 class TOWERDEFENCE_API ATowerBase : public AActor
 {
@@ -48,23 +30,11 @@ protected:
 
 	FTimerHandle SearchTimerHandle;
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Tower")
-	int32 TowerCost;
-
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
 	class UStaticMeshComponent* Mesh;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	int32 CurrentLevel = 1;
-
-	UPROPERTY(EditDefaultsOnly)
-	UDataTable* TowerDataTable;
-
-	UPROPERTY(VisibleAnywhere)
-	FTowerData TowerData;
-
-	UPROPERTY(EditDefaultsOnly)
-	FName TowerRowName;
 
 	FTimerHandle AttackTimerHandle;
 

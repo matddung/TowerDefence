@@ -11,15 +11,15 @@ ASplashTower::ASplashTower()
 
 void ASplashTower::BeginPlay()
 {
+    Super::BeginPlay();
+
     if (TowerDataTable)
     {
-        const FTowerData* Data = TowerDataTable->FindRow<FTowerData>(TowerRowName, TEXT("TowerData Lookup"));
+        const FSplashTowerData* Data = TowerDataTable->FindRow<FSplashTowerData>(TowerRowName, TEXT("TowerData Lookup"));
         if (Data)
         {
             TowerData = *Data;
-            TargetingRange = TowerData.Range;
+            TargetingRange = TowerData.AttackRange;
         }
     }
-
-    Super::BeginPlay();
 }

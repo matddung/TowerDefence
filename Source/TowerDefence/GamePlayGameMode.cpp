@@ -97,7 +97,7 @@ void AGamePlayGameMode::StartNextWave()
     }
 
     SpawnEnemy();
-    GetWorldTimerManager().SetTimer(SpawnTimerHandle, this, &AGamePlayGameMode::SpawnEnemy, 2.0f, true);
+    GetWorldTimerManager().SetTimer(SpawnTimerHandle, this, &AGamePlayGameMode::SpawnEnemy, Data->SpawnInterval, true);
 }
 
 void AGamePlayGameMode::SpawnEnemy()
