@@ -76,7 +76,4 @@ public:
 	TSubclassOf<class AFloatingSpawnActor> DamageTextActorClass;
 
 	void SpawnDamageText(AActor* DamagedActor, float Damage);
-
-	FTimerHandle DamageTimerHandle;
-	void ApplyTestDamage();
 };

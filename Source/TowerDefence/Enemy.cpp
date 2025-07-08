@@ -76,14 +76,6 @@ void AEnemy::BeginPlay()
     }
 
     UpdateHPBar();
-
-    GetWorldTimerManager().SetTimer(
-        DamageTimerHandle,
-        this,
-        &AEnemy::ApplyTestDamage,
-        1.0f,
-        true
-    );
 }
 
 void AEnemy::Tick(float DeltaTime)
@@ -184,12 +176,6 @@ void AEnemy::UpdateHPBar()
             Widget->SetHPPercent(CurrentHealth / MaxHealth);
         }
     }
-}
-
-void AEnemy::ApplyTestDamage()
-{
-    FDamageEvent DamageEvent;
-    TakeDamage(7.f, DamageEvent, nullptr, nullptr);
 }
 
 void AEnemy::SpawnDamageText(AActor* DamagedActor, float Damage)

@@ -17,17 +17,6 @@ void ATowerBase::BeginPlay()
 {
 	Super::BeginPlay();
 
-	if (TowerDataTable)
-	{
-		const FTowerData* Data = TowerDataTable->FindRow<FTowerData>(TowerRowName, TEXT("TowerData Lookup"));
-		if (Data)
-		{
-			TowerData = *Data;
-		}
-	}
-
-	TowerCost = TowerData.TowerCost;
-
 	GetWorldTimerManager().SetTimer(SearchTimerHandle, this, &ATowerBase::FindTargetEnemy, 1.0f, true);
 }
 
@@ -70,6 +59,6 @@ void ATowerBase::RotateToTarget(float DeltaTime)
 	FRotator TargetRotation = Direction.Rotation();
 	FRotator CurrentRotation = GetActorRotation();
 
-	FRotator NewRotation = FMath::RInterpTo(CurrentRotation, TargetRotation, DeltaTime, 2);
+	FRotator NewRotation = FMath::RInterpTo(CurrentRotation, TargetRotation, DeltaTime, 10);
 	SetActorRotation(FRotator(0.0f, NewRotation.Yaw, 0.0f));
 }

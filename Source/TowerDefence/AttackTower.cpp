@@ -11,5 +11,15 @@ AAttackTower::AAttackTower()
 
 void AAttackTower::BeginPlay()
 {
+    if (TowerDataTable)
+    {
+        const FTowerData* Data = TowerDataTable->FindRow<FTowerData>(TowerRowName, TEXT("TowerData Lookup"));
+        if (Data)
+        {
+            TowerData = *Data;
+            TargetingRange = TowerData.Range;
+        }
+    }
+
     Super::BeginPlay();
 }

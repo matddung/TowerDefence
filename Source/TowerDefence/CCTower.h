@@ -19,4 +19,6 @@ public:
 
 protected:
 	virtual void BeginPlay() override;
+
+	FName TowerRowName = "1";
 };

@@ -52,11 +52,10 @@ protected:
 	class AEnemy* CurrentTarget;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Combat")
-	float TargetingRange = 6000.0f;
+	float TargetingRange;
 
 	FTimerHandle SearchTimerHandle;
 
-public:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Tower")
 	int32 TowerCost;
 
