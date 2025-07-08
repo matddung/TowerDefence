@@ -5,14 +5,6 @@
 #include "Engine/DataTable.h"
 #include "TowerBase.generated.h"
 
-UENUM(BlueprintType)
-enum class ETowerType : uint8
-{
-	Attack,
-	Splash,
-	CC
-};
-
 USTRUCT(BlueprintType)
 struct FTowerData : public FTableRowBase
 {
@@ -43,9 +35,9 @@ public:
 	virtual void Tick(float DeltaTime) override;
 
 protected:
-	// 회전 및 타겟팅 관련 함수
 	virtual void FindTargetEnemy();
 	virtual void RotateToTarget(float DeltaTime);
+	virtual void Attack();
 
 protected:
 	UPROPERTY()
@@ -62,9 +54,6 @@ protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
 	class UStaticMeshComponent* Mesh;
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Tower")
-	ETowerType TowerType;
-
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	int32 CurrentLevel = 1;
 
@@ -76,4 +65,9 @@ protected:
 
 	UPROPERTY(EditDefaultsOnly)
 	FName TowerRowName;
+
+	FTimerHandle AttackTimerHandle;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Effects")
+	class UNiagaraSystem* AttackEffect;
 };
