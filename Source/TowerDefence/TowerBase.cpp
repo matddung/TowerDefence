@@ -3,7 +3,6 @@
 
 #include "Kismet/GameplayStatics.h"
 #include "TimerManager.h"
-#include "Components/StaticMeshComponent.h"
 #include "NiagaraFunctionLibrary.h"
 
 ATowerBase::ATowerBase()
@@ -20,9 +19,9 @@ void ATowerBase::BeginPlay()
 
 	GetWorldTimerManager().SetTimer(SearchTimerHandle, this, &ATowerBase::FindTargetEnemy, 1.0f, true);
 
-	if (TowerData.AttackInterval > 0.f)
+	if (AttackInterval > 0.f)
 	{
-		GetWorldTimerManager().SetTimer(AttackTimerHandle, this, &ATowerBase::Attack, TowerData.AttackInterval, true);
+		GetWorldTimerManager().SetTimer(AttackTimerHandle, this, &ATowerBase::Attack, AttackInterval, true);
 	}
 }
 
@@ -78,5 +77,5 @@ void ATowerBase::Attack()
 		UNiagaraFunctionLibrary::SpawnSystemAtLocation(GetWorld(), AttackEffect, CurrentTarget->GetActorLocation());
 	}
 
-	UGameplayStatics::ApplyDamage(CurrentTarget, TowerData.Damage, nullptr, this, nullptr);
+	UGameplayStatics::ApplyDamage(CurrentTarget, Damage, nullptr, this, nullptr);
 }

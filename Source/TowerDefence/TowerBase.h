@@ -40,4 +40,10 @@ protected:
 
 	UPROPERTY(EditDefaultsOnly, Category = "Effects")
 	class UNiagaraSystem* AttackEffect;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Combat")
+	float AttackInterval = 0.f;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Combat")
+	float Damage = 0.f;
 };

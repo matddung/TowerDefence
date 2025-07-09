@@ -20,6 +20,7 @@ void ACCTower::BeginPlay()
         {
             TowerData = *Data;
             TargetingRange = TowerData.AttackRange;
+            AttackInterval = TowerData.AttackInterval;
         }
     }
 }
