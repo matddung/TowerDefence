@@ -46,6 +46,8 @@ void AEnemy::BeginPlay()
         {
             WaveData = *Data;
             CurrentHealth = WaveData.MaxHealth;
+            OriginalMoveSpeed = WaveData.MoveSpeed;
+            CurrentMoveSpeed = WaveData.MoveSpeed;
         }
     }
 
@@ -72,7 +74,7 @@ void AEnemy::BeginPlay()
 
     if (AnimInst)
     {
-        AnimInst->Speed = WaveData.MoveSpeed;
+        AnimInst->Speed = CurrentMoveSpeed;
     }
 
     UpdateHPBar();
@@ -84,7 +86,7 @@ void AEnemy::Tick(float DeltaTime)
 
     if (!PathSpline) return;
 
-    DistanceAlongSpline += WaveData.MoveSpeed * DeltaTime;
+    DistanceAlongSpline += CurrentMoveSpeed * DeltaTime;
     float SplineLen = PathSpline->GetSplineLength();
 
     if (DistanceAlongSpline < SplineLen)
@@ -96,7 +98,7 @@ void AEnemy::Tick(float DeltaTime)
         SetActorLocationAndRotation(NewPos, NewRot);
 
         if (AnimInst)
-            AnimInst->Speed = WaveData.MoveSpeed;
+            AnimInst->Speed = CurrentMoveSpeed;
 
         return;
     }
@@ -180,14 +182,6 @@ void AEnemy::UpdateHPBar()
 
 void AEnemy::SpawnDamageText(AActor* DamagedActor, float Damage)
 {
-    if (!DamageTextActorClass)
-    {
-        UE_LOG(LogTemp, Error, TEXT("DamageTextActorClass is nullptr"));
-    }
-    if (!DamagedActor)
-    {
-        UE_LOG(LogTemp, Error, TEXT("DamagedActor is nullptr"));
-    }
     if (!DamageTextActorClass || !DamagedActor)
     {
         return;
@@ -202,4 +196,18 @@ void AEnemy::SpawnDamageText(AActor* DamagedActor, float Damage)
     {
         DamageText->SetDamage(Damage);
     }
+}
+
+void AEnemy::ApplySlow(float Percent)
+{
+    if (bIsSlowed)
+    {
+        return;
+    }
+
+    Percent = FMath::Clamp(Percent, 0.f, 100.f);
+    float SlowMultiplier = 1.f - Percent / 100.f;
+
+    CurrentMoveSpeed = OriginalMoveSpeed * SlowMultiplier;
+    bIsSlowed = true;
 }

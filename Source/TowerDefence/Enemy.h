@@ -79,4 +79,14 @@ public:
 	TSubclassOf<class AFloatingSpawnActor> DamageTextActorClass;
 
 	void SpawnDamageText(AActor* DamagedActor, float Damage);
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Movement")
+	bool bIsSlowed = false;
+
+	float OriginalMoveSpeed = 0.f;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Movement")
+	float CurrentMoveSpeed = 0.f;
+
+	void ApplySlow(float Percent);
 };

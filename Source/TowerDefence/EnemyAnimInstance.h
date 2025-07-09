@@ -4,9 +4,6 @@
 #include "Animation/AnimInstance.h"
 #include "EnemyAnimInstance.generated.h"
 
-/**
- * 
- */
 UCLASS()
 class TOWERDEFENCE_API UEnemyAnimInstance : public UAnimInstance
 {

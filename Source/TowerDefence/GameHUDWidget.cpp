@@ -39,10 +39,6 @@ void UGameHUDWidget::NativeConstruct()
             CCBuildingButton->SetToolTip(CCTip);
         }
     }
-    else
-    {
-        UE_LOG(LogTemp, Error, TEXT("TooltipWidgetClass is NULL!"));
-    }
 
     if (StartRoundButton)
     {

@@ -1,4 +1,8 @@
 #include "CCTower.h"
+#include "Enemy.h"
+
+#include "Kismet/GameplayStatics.h"
+#include "NiagaraFunctionLibrary.h"
 
 ACCTower::ACCTower()
 {
@@ -24,8 +28,61 @@ void ACCTower::BeginPlay()
 
             if (AttackInterval > 0.f)
             {
-                GetWorldTimerManager().SetTimer(AttackTimerHandle, this, &ATowerBase::Attack, AttackInterval, true);
+                GetWorldTimerManager().SetTimer(AttackTimerHandle, this, &ACCTower::Attack, AttackInterval, true);
             }
         }
     }
+}
+
+void ACCTower::FindTargetEnemy()
+{
+    TArray<AActor*> FoundEnemies;
+    UGameplayStatics::GetAllActorsOfClass(GetWorld(), AEnemy::StaticClass(), FoundEnemies);
+
+    AEnemy* ClosestUnslowed = nullptr;
+    float ClosestUnslowedDistSq = TargetingRange * TargetingRange;
+    AEnemy* ClosestSlowed = nullptr;
+    float ClosestSlowedDistSq = TargetingRange * TargetingRange;
+
+    for (AActor* Actor : FoundEnemies)
+    {
+        AEnemy* Enemy = Cast<AEnemy>(Actor);
+        if (!Enemy)
+            continue;
+
+        float DistSq = FVector::DistSquared(Actor->GetActorLocation(), GetActorLocation());
+        if (DistSq > TargetingRange * TargetingRange)
+            continue;
+
+        if (!Enemy->bIsSlowed)
+        {
+            if (DistSq < ClosestUnslowedDistSq)
+            {
+                ClosestUnslowed = Enemy;
+                ClosestUnslowedDistSq = DistSq;
+            }
+        }
+        else
+        {
+            if (DistSq < ClosestSlowedDistSq)
+            {
+                ClosestSlowed = Enemy;
+                ClosestSlowedDistSq = DistSq;
+            }
+        }
+    }
+
+    CurrentTarget = ClosestUnslowed ? ClosestUnslowed : ClosestSlowed;
+}
+
+void ACCTower::Attack()
+{
+    if (!CurrentTarget) return;
+
+    if (AttackEffect)
+    {
+        UNiagaraFunctionLibrary::SpawnSystemAtLocation(GetWorld(), AttackEffect, CurrentTarget->GetActorLocation());
+    }
+
+    CurrentTarget->ApplySlow(TowerData.SlowlyPercent);
 }
