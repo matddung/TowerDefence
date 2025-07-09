@@ -15,8 +15,6 @@ public:
 
 	virtual void BeginPlay() override;
 	virtual void Tick(float DeltaTime) override;
-
-protected:
 	virtual void FindTargetEnemy();
 	virtual void RotateToTarget(float DeltaTime);
 	virtual void Attack();

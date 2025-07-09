@@ -21,6 +21,11 @@ void ACCTower::BeginPlay()
             TowerData = *Data;
             TargetingRange = TowerData.AttackRange;
             AttackInterval = TowerData.AttackInterval;
+
+            if (AttackInterval > 0.f)
+            {
+                GetWorldTimerManager().SetTimer(AttackTimerHandle, this, &ATowerBase::Attack, AttackInterval, true);
+            }
         }
     }
 }

@@ -22,6 +22,11 @@ void ASplashTower::BeginPlay()
             TargetingRange = TowerData.AttackRange;
             AttackInterval = TowerData.AttackInterval;
             Damage = TowerData.Damage;
+
+            if (AttackInterval > 0.f)
+            {
+                GetWorldTimerManager().SetTimer(AttackTimerHandle, this, &ATowerBase::Attack, AttackInterval, true);
+            }
         }
     }
 }
