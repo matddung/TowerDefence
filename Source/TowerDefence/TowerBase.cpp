@@ -1,9 +1,13 @@
 #include "TowerBase.h"
 #include "Enemy.h"
+#include "GamePlayGameMode.h"
+#include "TowerMenuWidget.h"
 
 #include "Kismet/GameplayStatics.h"
 #include "TimerManager.h"
 #include "NiagaraFunctionLibrary.h"
+#include "Components/WidgetComponent.h"
+#include "InputCoreTypes.h"
 
 ATowerBase::ATowerBase()
 {
@@ -11,11 +15,31 @@ ATowerBase::ATowerBase()
 
 	Mesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("TowerMesh"));
 	RootComponent = Mesh;
+
+	MenuWidgetComponent = CreateDefaultSubobject<UWidgetComponent>(TEXT("MenuWidget"));
+	MenuWidgetComponent->SetupAttachment(RootComponent);
+	MenuWidgetComponent->SetWidgetSpace(EWidgetSpace::Screen);
+	MenuWidgetComponent->SetDrawSize(FVector2D(120.f, 60.f));
+	MenuWidgetComponent->SetVisibility(false);
 }
 
 void ATowerBase::BeginPlay()
 {
 	Super::BeginPlay();
+
+	if (MenuWidgetClass)
+	{
+		MenuWidgetComponent->SetWidgetClass(MenuWidgetClass);
+		if (UTowerMenuWidget* Menu = Cast<UTowerMenuWidget>(MenuWidgetComponent->GetUserWidgetObject()))
+		{
+			Menu->Init(this);
+		}
+	}
+
+	if (Mesh)
+	{
+		Mesh->OnClicked.AddDynamic(this, &ATowerBase::OnMeshClicked);
+	}
 
 	GetWorldTimerManager().SetTimer(SearchTimerHandle, this, &ATowerBase::FindTargetEnemy, 1.0f, true);
 
@@ -78,4 +102,54 @@ void ATowerBase::Attack()
 	}
 
 	UGameplayStatics::ApplyDamage(CurrentTarget, Damage, nullptr, this, nullptr);
+}
+
+void ATowerBase::ShowMenu(bool bShow)
+{
+	if (MenuWidgetComponent)
+	{
+		MenuWidgetComponent->SetVisibility(bShow);
+	}
+}
+
+void ATowerBase::OnMeshClicked(UPrimitiveComponent* ClickedComp, FKey ButtonPressed)
+{
+	if (ButtonPressed == EKeys::RightMouseButton)
+	{
+		bool bShow = !MenuWidgetComponent->IsVisible();
+		ShowMenu(bShow);
+	}
+}
+
+void ATowerBase::SellTower()
+{
+	if (AGamePlayGameMode* GM = GetWorld()->GetAuthGameMode<AGamePlayGameMode>())
+	{
+		int32 Refund = FMath::RoundToInt(GetBuildCost(CurrentLevel) * 0.7f);
+		GM->AddGold(Refund);
+	}
+
+	Destroy();
+}
+
+void ATowerBase::UpgradeTower()
+{
+	int32 NextLevel = CurrentLevel + 1;
+	int32 Cost = GetBuildCost(NextLevel);
+	if (Cost <= 0)
+	{
+		return;
+	}
+
+	if (AGamePlayGameMode* GM = GetWorld()->GetAuthGameMode<AGamePlayGameMode>())
+	{
+		if (!GM->SpendGold(Cost))
+		{
+			return;
+		}
+	}
+
+	CurrentLevel = NextLevel;
+	ReloadData();
+	ShowMenu(false);
 }

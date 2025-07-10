@@ -31,6 +31,9 @@ class TOWERDEFENCE_API AAttackTower : public ATowerBase
 public:
 	AAttackTower();
 
+	virtual int32 GetBuildCost(int32 Level = -1) const override;
+	virtual void ReloadData() override;
+
 protected:
 	virtual void BeginPlay() override;
 

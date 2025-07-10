@@ -19,6 +19,20 @@ public:
 	virtual void RotateToTarget(float DeltaTime);
 	virtual void Attack();
 
+	virtual int32 GetBuildCost(int32 Level = -1) const { return 0; }
+	virtual void ReloadData() {}
+
+	UFUNCTION()
+	void SellTower();
+
+	UFUNCTION()
+	void UpgradeTower();
+
+	void ShowMenu(bool bShow);
+
+	UFUNCTION()
+	void OnMeshClicked(UPrimitiveComponent* ClickedComp, FKey ButtonPressed);
+
 protected:
 	UPROPERTY()
 	class AEnemy* CurrentTarget;
@@ -44,4 +58,10 @@ protected:
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Combat")
 	float Damage = 0.f;
+
+	UPROPERTY(VisibleAnywhere, Category = "UI")
+	class UWidgetComponent* MenuWidgetComponent;
+
+	UPROPERTY(EditDefaultsOnly, Category = "UI")
+	TSubclassOf<class UTowerMenuWidget> MenuWidgetClass;
 };

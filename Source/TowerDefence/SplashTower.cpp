@@ -30,3 +30,45 @@ void ASplashTower::BeginPlay()
         }
     }
 }
+
+int32 ASplashTower::GetBuildCost(int32 Level) const
+{
+    if (Level < 0)
+    {
+        Level = CurrentLevel;
+    }
+
+    if (TowerDataTable)
+    {
+        FName Row = FName(*FString::FromInt(Level));
+        const FSplashTowerData* Data = TowerDataTable->FindRow<FSplashTowerData>(Row, TEXT("GetBuildCost"));
+        if (Data)
+        {
+            return Data->BuildCost;
+        }
+    }
+
+    return 0;
+}
+
+void ASplashTower::ReloadData()
+{
+    if (TowerDataTable)
+    {
+        TowerRowName = FName(*FString::FromInt(CurrentLevel));
+        const FSplashTowerData* Data = TowerDataTable->FindRow<FSplashTowerData>(TowerRowName, TEXT("ReloadData"));
+        if (Data)
+        {
+            TowerData = *Data;
+            TargetingRange = TowerData.AttackRange;
+            AttackInterval = TowerData.AttackInterval;
+            Damage = TowerData.Damage;
+
+            GetWorldTimerManager().ClearTimer(AttackTimerHandle);
+            if (AttackInterval > 0.f)
+            {
+                GetWorldTimerManager().SetTimer(AttackTimerHandle, this, &ATowerBase::Attack, AttackInterval, true);
+            }
+        }
+    }
+}

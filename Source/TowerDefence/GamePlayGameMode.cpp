@@ -143,3 +143,19 @@ void AGamePlayGameMode::HandleEnemyDestroyed(AActor* DestroyedActor)
         }
     }
 }
+
+bool AGamePlayGameMode::SpendGold(int32 Amount)
+{
+    if (Gold < Amount)
+    {
+        return false;
+    }
+
+    Gold -= Amount;
+    return true;
+}
+
+void AGamePlayGameMode::AddGold(int32 Amount)
+{
+    Gold += Amount;
+}

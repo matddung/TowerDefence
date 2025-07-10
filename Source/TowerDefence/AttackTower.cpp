@@ -30,3 +30,45 @@ void AAttackTower::BeginPlay()
         }
     }
 }
+
+int32 AAttackTower::GetBuildCost(int32 Level) const
+{
+    if (Level < 0)
+    {
+        Level = CurrentLevel;
+    }
+
+    if (TowerDataTable)
+    {
+        FName Row = FName(*FString::FromInt(Level));
+        const FAttackTowerData* Data = TowerDataTable->FindRow<FAttackTowerData>(Row, TEXT("GetBuildCost"));
+        if (Data)
+        {
+            return Data->BuildCost;
+        }
+    }
+
+    return 0;
+}
+
+void AAttackTower::ReloadData()
+{
+    if (TowerDataTable)
+    {
+        TowerRowName = FName(*FString::FromInt(CurrentLevel));
+        const FAttackTowerData* Data = TowerDataTable->FindRow<FAttackTowerData>(TowerRowName, TEXT("ReloadData"));
+        if (Data)
+        {
+            TowerData = *Data;
+            TargetingRange = TowerData.AttackRange;
+            AttackInterval = TowerData.AttackInterval;
+            Damage = TowerData.Damage;
+
+            GetWorldTimerManager().ClearTimer(AttackTimerHandle);
+            if (AttackInterval > 0.f)
+            {
+                GetWorldTimerManager().SetTimer(AttackTimerHandle, this, &ATowerBase::Attack, AttackInterval, true);
+            }
+        }
+    }
+}

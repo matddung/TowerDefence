@@ -11,4 +11,11 @@ class TOWERDEFENCE_API ATDPlayerController : public APlayerController
 
 protected:
     virtual void BeginPlay() override;
+
+    virtual void SetupInputComponent() override;
+
+    void HandleRightClick();
+
+    UPROPERTY()
+    class ATowerBase* SelectedTower = nullptr;
 };

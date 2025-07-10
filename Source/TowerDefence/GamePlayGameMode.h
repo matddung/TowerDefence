@@ -21,6 +21,15 @@ public:
 	UFUNCTION()
 	void HandleEnemyDestroyed(AActor* DestroyedActor);
 
+	UFUNCTION(BlueprintCallable, Category = "Economy")
+	bool SpendGold(int32 Amount);
+
+	UFUNCTION(BlueprintCallable, Category = "Economy")
+	void AddGold(int32 Amount);
+
+	UFUNCTION(BlueprintCallable, Category = "Economy")
+	int32 GetGold() const { return Gold; }
+
 protected:
 	virtual void BeginPlay() override;
 
@@ -47,4 +56,7 @@ protected:
 	class UGameHUDWidget* GameHUDWidget = nullptr;
 
 	int32 AliveEnemyCount = 0;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Economy")
+	int32 Gold = 500;
 };

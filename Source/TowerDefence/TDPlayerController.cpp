@@ -2,6 +2,7 @@
 #include "TowerBase.h"
 
 #include "Kismet/GameplayStatics.h"
+#include "InputCoreTypes.h"
 
 void ATDPlayerController::BeginPlay()
 {
@@ -14,4 +15,35 @@ void ATDPlayerController::BeginPlay()
 
     FInputModeUIOnly InputMode;
     SetInputMode(InputMode);
+}
+
+void ATDPlayerController::SetupInputComponent()
+{
+    Super::SetupInputComponent();
+
+    if (InputComponent)
+    {
+        InputComponent->BindKey(EKeys::RightMouseButton, IE_Pressed, this, &ATDPlayerController::HandleRightClick);
+    }
+}
+
+void ATDPlayerController::HandleRightClick()
+{
+    FHitResult Hit;
+    GetHitResultUnderCursor(ECC_Visibility, false, Hit);
+
+    ATowerBase* ClickedTower = Cast<ATowerBase>(Hit.GetActor());
+
+    if (SelectedTower && SelectedTower != ClickedTower)
+    {
+        SelectedTower->ShowMenu(false);
+        SelectedTower = nullptr;
+    }
+
+    if (ClickedTower)
+    {
+        bool bWasSelected = (ClickedTower == SelectedTower);
+        ClickedTower->ShowMenu(!bWasSelected);
+        SelectedTower = bWasSelected ? nullptr : ClickedTower;
+    }
 }
