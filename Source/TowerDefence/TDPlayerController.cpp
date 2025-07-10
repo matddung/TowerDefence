@@ -13,7 +13,8 @@ void ATDPlayerController::BeginPlay()
     bEnableClickEvents = true;
     bEnableMouseOverEvents = true;
 
-    FInputModeUIOnly InputMode;
+    FInputModeGameAndUI InputMode;
+    InputMode.SetHideCursorDuringCapture(false);
     SetInputMode(InputMode);
 }
 
