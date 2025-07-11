@@ -31,7 +31,7 @@ void ATDPlayerController::SetupInputComponent()
 void ATDPlayerController::HandleRightClick()
 {
     FHitResult Hit;
-    GetHitResultUnderCursor(ECC_Visibility, false, Hit);
+    GetHitResultUnderCursor(ECC_Visibility, true, Hit);
 
     ATowerBase* ClickedTower = Cast<ATowerBase>(Hit.GetActor());
 
