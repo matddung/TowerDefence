@@ -33,6 +33,8 @@ public:
 	UFUNCTION()
 	void OnMeshClicked(UPrimitiveComponent* ClickedComp, FKey ButtonPressed);
 
+	int32 GetCurrentLevel() const { return CurrentLevel; }
+
 protected:
 	UPROPERTY()
 	class AEnemy* CurrentTarget;

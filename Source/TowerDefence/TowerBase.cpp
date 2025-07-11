@@ -108,6 +108,14 @@ void ATowerBase::ShowMenu(bool bShow)
 {
 	if (MenuWidgetComponent)
 	{
+		if (bShow)
+		{
+			if (UTowerMenuWidget* Menu = Cast<UTowerMenuWidget>(MenuWidgetComponent->GetUserWidgetObject()))
+			{
+				Menu->UpdateInfo();
+			}
+		}
+
 		MenuWidgetComponent->SetVisibility(bShow);
 	}
 }

@@ -11,6 +11,7 @@ class TOWERDEFENCE_API UTowerMenuWidget : public UUserWidget
 
 public:
     void Init(class ATowerBase* InOwner);
+    void UpdateInfo();
 
 protected:
     UFUNCTION()
@@ -24,6 +25,9 @@ protected:
 
     UPROPERTY(meta = (BindWidget))
     class UButton* UpgradeButton;
+
+    UPROPERTY(meta = (BindWidget))
+    class UTextBlock* CurrentLevelText;
 
 private:
     UPROPERTY()
