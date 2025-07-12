@@ -6,6 +6,7 @@
 #include "Components/Button.h"
 #include "Components/WidgetSwitcher.h"
 #include "TooltipWidget.h"
+#include "Components/TextBlock.h"
 
 void UGameHUDWidget::NativeConstruct()
 {
@@ -69,6 +70,11 @@ void UGameHUDWidget::NativeConstruct()
     {
         CCBuildingButton->OnClicked.AddDynamic(this, &UGameHUDWidget::OnCCClicked);
     }
+
+    if (AGamePlayGameMode* GM = GetWorld()->GetAuthGameMode<AGamePlayGameMode>())
+    {
+        SetGoldAmount(GM->GetGold());
+    }
 }
 
 void UGameHUDWidget::OnStartClicked()
@@ -118,5 +124,14 @@ void UGameHUDWidget::SetStartButtonEnabled(bool bEnabled)
     if (StartRoundButton)
     {
         StartRoundButton->SetIsEnabled(bEnabled);
+    }
+}
+
+void UGameHUDWidget::SetGoldAmount(int32 Amount)
+{
+    if (GoldTextBlock1 && GoldTextBlock2)
+    {
+        GoldTextBlock1->SetText(FText::FromString(FString::Printf(TEXT("Gold: %d"), Amount)));
+        GoldTextBlock2->SetText(FText::FromString(FString::Printf(TEXT("Gold: %d"), Amount)));
     }
 }

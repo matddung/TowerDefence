@@ -32,6 +32,8 @@ public:
 
     void SetStartButtonEnabled(bool bEnabled);
 
+    void SetGoldAmount(int32 Amount);
+
     UPROPERTY(meta = (BindWidget))
     class UWidgetSwitcher* MenuSwitcher;
 
@@ -52,6 +54,12 @@ public:
 
     UPROPERTY(meta = (BindWidget))
     class UButton* CCBuildingButton;
+
+    UPROPERTY(meta = (BindWidget))
+    class UTextBlock* GoldTextBlock1;
+
+    UPROPERTY(meta = (BindWidget))
+    class UTextBlock* GoldTextBlock2;
 
     UPROPERTY(EditDefaultsOnly, Category = "UI")
     TSubclassOf<class UTooltipWidget> TooltipWidgetClass;

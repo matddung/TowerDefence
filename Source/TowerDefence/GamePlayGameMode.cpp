@@ -49,10 +49,11 @@ void AGamePlayGameMode::BeginPlay()
             }
         }
 
-        UGameHUDWidget* HUD = CreateWidget<UGameHUDWidget>(PC, GameHUDWidgetClass);
-        if (HUD)
+        GameHUDWidget = CreateWidget<UGameHUDWidget>(PC, GameHUDWidgetClass);
+        if (GameHUDWidget)
         {
-            HUD->AddToViewport();
+            GameHUDWidget->AddToViewport();
+            GameHUDWidget->SetGoldAmount(Gold);
         }
     }
 }
@@ -152,10 +153,21 @@ bool AGamePlayGameMode::SpendGold(int32 Amount)
     }
 
     Gold -= Amount;
+
+    if (GameHUDWidget)
+    {
+        GameHUDWidget->SetGoldAmount(Gold);
+    }
+
     return true;
 }
 
 void AGamePlayGameMode::AddGold(int32 Amount)
 {
     Gold += Amount;
+
+    if (GameHUDWidget)
+    {
+        GameHUDWidget->SetGoldAmount(Gold);
+    }
 }
