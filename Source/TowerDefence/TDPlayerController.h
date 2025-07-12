@@ -15,6 +15,7 @@ protected:
     virtual void SetupInputComponent() override;
 
     void HandleRightClick();
+    void HandleLeftClick();
 
     UPROPERTY()
     class ATowerBase* SelectedTower = nullptr;

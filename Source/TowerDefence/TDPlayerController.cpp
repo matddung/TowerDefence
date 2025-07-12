@@ -25,6 +25,7 @@ void ATDPlayerController::SetupInputComponent()
     if (InputComponent)
     {
         InputComponent->BindKey(EKeys::RightMouseButton, IE_Pressed, this, &ATDPlayerController::HandleRightClick);
+        InputComponent->BindKey(EKeys::LeftMouseButton, IE_Pressed, this, &ATDPlayerController::HandleLeftClick);
     }
 }
 
@@ -46,5 +47,14 @@ void ATDPlayerController::HandleRightClick()
         bool bWasSelected = (ClickedTower == SelectedTower);
         ClickedTower->ShowMenu(!bWasSelected);
         SelectedTower = bWasSelected ? nullptr : ClickedTower;
+    }
+}
+
+void ATDPlayerController::HandleLeftClick()
+{
+    if (SelectedTower)
+    {
+        SelectedTower->ShowMenu(false);
+        SelectedTower = nullptr;
     }
 }
