@@ -133,6 +133,12 @@ void ATowerBase::SellTower()
 {
 	if (AGamePlayGameMode* GM = GetWorld()->GetAuthGameMode<AGamePlayGameMode>())
 	{
+		if (GM->IsWaveInProgress())
+		{
+			UE_LOG(LogTemp, Warning, TEXT("Cannot sell tower during wave"));
+			return;
+		}
+
 		int32 Refund = FMath::RoundToInt(GetBuildCost(CurrentLevel) * 0.7f);
 		GM->AddGold(Refund);
 	}
@@ -151,6 +157,12 @@ void ATowerBase::UpgradeTower()
 
 	if (AGamePlayGameMode* GM = GetWorld()->GetAuthGameMode<AGamePlayGameMode>())
 	{
+		if (GM->IsWaveInProgress())
+		{
+			UE_LOG(LogTemp, Warning, TEXT("Cannot upgrade tower during wave"));
+			return;
+		}
+
 		if (!GM->SpendGold(Cost))
 		{
 			return;

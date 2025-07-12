@@ -89,6 +89,14 @@ void UGameHUDWidget::OnStartClicked()
 void UGameHUDWidget::OnBuildClicked()
 {
     UE_LOG(LogTemp, Log, TEXT("Build button clicked"));
+    if (AGamePlayGameMode* GM = GetWorld()->GetAuthGameMode<AGamePlayGameMode>())
+    {
+        if (GM->IsWaveInProgress())
+        {
+            UE_LOG(LogTemp, Warning, TEXT("Cannot build towers during wave"));
+            return;
+        }
+    }
     if (MenuSwitcher)
     {
         MenuSwitcher->SetActiveWidgetIndex(1);
@@ -107,16 +115,40 @@ void UGameHUDWidget::OnBackClicked()
 void UGameHUDWidget::OnAttackClicked()
 {
     UE_LOG(LogTemp, Log, TEXT("Build Attack button clicked"));
+    if (AGamePlayGameMode* GM = GetWorld()->GetAuthGameMode<AGamePlayGameMode>())
+    {
+        if (GM->IsWaveInProgress())
+        {
+            UE_LOG(LogTemp, Warning, TEXT("Cannot build towers during wave"));
+            return;
+        }
+    }
 }
 
 void UGameHUDWidget::OnSplashClicked()
 {
     UE_LOG(LogTemp, Log, TEXT("Build Splash button clicked"));
+    if (AGamePlayGameMode* GM = GetWorld()->GetAuthGameMode<AGamePlayGameMode>())
+    {
+        if (GM->IsWaveInProgress())
+        {
+            UE_LOG(LogTemp, Warning, TEXT("Cannot build towers during wave"));
+            return;
+        }
+    }
 }
 
 void UGameHUDWidget::OnCCClicked()
 {
     UE_LOG(LogTemp, Log, TEXT("Build CC button clicked"));
+    if (AGamePlayGameMode* GM = GetWorld()->GetAuthGameMode<AGamePlayGameMode>())
+    {
+        if (GM->IsWaveInProgress())
+        {
+            UE_LOG(LogTemp, Warning, TEXT("Cannot build towers during wave"));
+            return;
+        }
+    }
 }
 
 void UGameHUDWidget::SetStartButtonEnabled(bool bEnabled)

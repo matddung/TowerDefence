@@ -1,5 +1,6 @@
 #include "TowerMenuWidget.h"
 #include "TowerBase.h"
+#include "GamePlayGameMode.h"
 
 #include "Components/Button.h"
 #include "Components/TextBlock.h"
@@ -53,6 +54,14 @@ void UTowerMenuWidget::OnSellClicked()
 {
     if (OwnerTower)
     {
+        if (AGamePlayGameMode* GM = OwnerTower->GetWorld()->GetAuthGameMode<AGamePlayGameMode>())
+        {
+            if (GM->IsWaveInProgress())
+            {
+                UE_LOG(LogTemp, Warning, TEXT("Cannot sell tower during wave"));
+                return;
+            }
+        }
         OwnerTower->SellTower();
     }
 }
@@ -61,6 +70,14 @@ void UTowerMenuWidget::OnUpgradeClicked()
 {
     if (OwnerTower)
     {
+        if (AGamePlayGameMode* GM = OwnerTower->GetWorld()->GetAuthGameMode<AGamePlayGameMode>())
+        {
+            if (GM->IsWaveInProgress())
+            {
+                UE_LOG(LogTemp, Warning, TEXT("Cannot upgrade tower during wave"));
+                return;
+            }
+        }
         OwnerTower->UpgradeTower();
     }
 }

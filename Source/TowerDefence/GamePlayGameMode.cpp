@@ -98,6 +98,7 @@ void AGamePlayGameMode::StartNextWave()
     }
 
     SpawnEnemy();
+    bWaveInProgress = true;
     GetWorldTimerManager().SetTimer(SpawnTimerHandle, this, &AGamePlayGameMode::SpawnEnemy, Data->SpawnInterval, true);
 }
 
@@ -138,6 +139,7 @@ void AGamePlayGameMode::HandleEnemyDestroyed(AActor* DestroyedActor)
     if (AliveEnemyCount <= 0)
     {
         AliveEnemyCount = 0;
+        bWaveInProgress = false;
         if (GameHUDWidget)
         {
             GameHUDWidget->SetStartButtonEnabled(true);

@@ -30,6 +30,8 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Economy")
 	int32 GetGold() const { return Gold; }
 
+	bool IsWaveInProgress() const { return bWaveInProgress; }
+
 protected:
 	virtual void BeginPlay() override;
 
@@ -59,4 +61,6 @@ protected:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Economy")
 	int32 Gold = 500;
+
+	bool bWaveInProgress = false;
 };
