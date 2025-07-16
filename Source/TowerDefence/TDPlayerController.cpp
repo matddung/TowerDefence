@@ -1,12 +1,14 @@
 #include "TDPlayerController.h"
 #include "TowerBase.h"
 #include "GamePlayGameMode.h"
+#include "PathSplineActor.h"
 
 #include "Kismet/GameplayStatics.h"
 #include "InputCoreTypes.h"
 #include "Engine/World.h"
 #include "Engine/EngineTypes.h"
 #include "EngineUtils.h"
+#include "Components/SplineComponent.h"
 
 ATDPlayerController::ATDPlayerController()
 {
@@ -147,19 +149,7 @@ void ATDPlayerController::UpdatePreviewLocation()
     FVector Loc = Hit.Location;
     PreviewTower->SetActorLocation(Loc);
 
-    // simple placement check
-    bCanPlaceTower = true;
-    for (TActorIterator<ATowerBase> It(GetWorld()); It; ++It)
-    {
-        if (*It != PreviewTower)
-        {
-            if (FVector::DistSquared(It->GetActorLocation(), Loc) < 10000.f)
-            {
-                bCanPlaceTower = false;
-                break;
-            }
-        }
-    }
+    bCanPlaceTower = CanPlaceTowerAt(Loc);
 
     if (SuccessMaterial && FailedMaterial)
     {
@@ -178,6 +168,48 @@ void ATDPlayerController::UpdatePreviewLocation()
     PreviewTower->SetActorHiddenInGame(false);
 }
 
+bool ATDPlayerController::CanPlaceTowerAt(const FVector& Loc) const
+{
+    if (!PreviewTower)
+    {
+        return false;
+    }
+
+    FVector PreviewOrigin, PreviewExtent;
+    PreviewTower->GetActorBounds(false, PreviewOrigin, PreviewExtent);
+    FBox PreviewBox(PreviewOrigin - PreviewExtent, PreviewOrigin + PreviewExtent);
+
+    for (TActorIterator<ATowerBase> It(GetWorld()); It; ++It)
+    {
+        if (*It != PreviewTower)
+        {
+            FVector OtherOrigin, OtherExtent;
+            It->GetActorBounds(false, OtherOrigin, OtherExtent);
+            FBox OtherBox(OtherOrigin - OtherExtent, OtherOrigin + OtherExtent);
+            if (PreviewBox.Intersect(OtherBox))
+            {
+                return false;
+            }
+        }
+    }
+
+    if (APathSplineActor* PathActor = Cast<APathSplineActor>(UGameplayStatics::GetActorOfClass(GetWorld(), APathSplineActor::StaticClass())))
+    {
+        if (USplineComponent* PathSpline = PathActor->GetSplineComponent())
+        {
+            float Key = PathSpline->FindInputKeyClosestToWorldLocation(Loc);
+            FVector SplineLoc = PathSpline->GetLocationAtSplineInputKey(Key, ESplineCoordinateSpace::World);
+            const float SplineBuffer = 1150.f;
+            if (FVector::DistSquared(SplineLoc, Loc) < SplineBuffer * SplineBuffer)
+            {
+                return false;
+            }
+        }
+    }
+
+    return true;
+}
+
 void ATDPlayerController::FinishPlacingTower()
 {
     if (!PreviewTower)
@@ -186,7 +218,7 @@ void ATDPlayerController::FinishPlacingTower()
         return;
     }
 
-    if (bCanPlaceTower)
+    if (bCanPlaceTower && CanPlaceTowerAt(PreviewTower->GetActorLocation()))
     {
         if (AGamePlayGameMode* GM = GetWorld()->GetAuthGameMode<AGamePlayGameMode>())
         {

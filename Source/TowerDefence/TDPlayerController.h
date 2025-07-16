@@ -27,6 +27,7 @@ protected:
     void FinishPlacingTower();
 
     void UpdatePreviewLocation();
+    bool CanPlaceTowerAt(const FVector& Loc) const;
 
     bool bIsPlacingTower = false;
     bool bCanPlaceTower = false;
