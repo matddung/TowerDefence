@@ -123,6 +123,11 @@ void UGameHUDWidget::OnAttackClicked()
             return;
         }
     }
+
+    if (ATDPlayerController* PC = Cast<ATDPlayerController>(GetOwningPlayer()))
+    {
+        PC->StartPlacingAttackTower();
+    }
 }
 
 void UGameHUDWidget::OnSplashClicked()
@@ -136,6 +141,11 @@ void UGameHUDWidget::OnSplashClicked()
             return;
         }
     }
+
+    if (ATDPlayerController* PC = Cast<ATDPlayerController>(GetOwningPlayer()))
+    {
+        PC->StartPlacingSplashTower();
+    }
 }
 
 void UGameHUDWidget::OnCCClicked()
@@ -148,6 +158,11 @@ void UGameHUDWidget::OnCCClicked()
             UE_LOG(LogTemp, Warning, TEXT("Cannot build towers during wave"));
             return;
         }
+    }
+
+    if (ATDPlayerController* PC = Cast<ATDPlayerController>(GetOwningPlayer()))
+    {
+        PC->StartPlacingCCTower();
     }
 }
 

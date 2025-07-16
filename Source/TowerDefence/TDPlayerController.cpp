@@ -1,8 +1,45 @@
 #include "TDPlayerController.h"
 #include "TowerBase.h"
+#include "GamePlayGameMode.h"
 
 #include "Kismet/GameplayStatics.h"
 #include "InputCoreTypes.h"
+#include "Engine/World.h"
+#include "Engine/EngineTypes.h"
+#include "EngineUtils.h"
+
+ATDPlayerController::ATDPlayerController()
+{
+    static ConstructorHelpers::FClassFinder<ATowerBase> AttackBP(TEXT("/Game/Assets/AttackTower/BP_AttackTower"));
+    if (AttackBP.Succeeded())
+    {
+        AttackTowerClass = AttackBP.Class;
+    }
+
+    static ConstructorHelpers::FClassFinder<ATowerBase> SplashBP(TEXT("/Game/Assets/SplashTower/BP_SplashTower"));
+    if (SplashBP.Succeeded())
+    {
+        SplashTowerClass = SplashBP.Class;
+    }
+
+    static ConstructorHelpers::FClassFinder<ATowerBase> CCBP(TEXT("/Game/Assets/CCTower/BP_CCTower"));
+    if (CCBP.Succeeded())
+    {
+        CCTowerClass = CCBP.Class;
+    }
+
+    static ConstructorHelpers::FObjectFinder<UMaterialInterface> SuccessMatObj(TEXT("/Game/Assets/Material/M_Success"));
+    if (SuccessMatObj.Succeeded())
+    {
+        SuccessMaterial = SuccessMatObj.Object;
+    }
+
+    static ConstructorHelpers::FObjectFinder<UMaterialInterface> FailedMatObj(TEXT("/Game/Assets/Material/M_Failed"));
+    if (FailedMatObj.Succeeded())
+    {
+        FailedMaterial = FailedMatObj.Object;
+    }
+}
 
 void ATDPlayerController::BeginPlay()
 {
@@ -29,6 +66,16 @@ void ATDPlayerController::SetupInputComponent()
     }
 }
 
+void ATDPlayerController::PlayerTick(float DeltaTime)
+{
+    Super::PlayerTick(DeltaTime);
+
+    if (bIsPlacingTower && PreviewTower)
+    {
+        UpdatePreviewLocation();
+    }
+}
+
 void ATDPlayerController::HandleRightClick()
 {
     FHitResult Hit;
@@ -52,9 +99,123 @@ void ATDPlayerController::HandleRightClick()
 
 void ATDPlayerController::HandleLeftClick()
 {
+    if (bIsPlacingTower)
+    {
+        FinishPlacingTower();
+        return;
+    }
+
     if (SelectedTower)
     {
         SelectedTower->ShowMenu(false);
         SelectedTower = nullptr;
     }
+}
+
+void ATDPlayerController::StartPlacingTower(TSubclassOf<ATowerBase> TowerClass)
+{
+    if (!TowerClass)
+    {
+        return;
+    }
+
+    if (PreviewTower)
+    {
+        PreviewTower->Destroy();
+        PreviewTower = nullptr;
+    }
+
+    PreviewTower = GetWorld()->SpawnActor<ATowerBase>(TowerClass);
+    if (PreviewTower)
+    {
+        PreviewTower->SetActorEnableCollision(false);
+        PreviewTower->SetActorHiddenInGame(true);
+    }
+
+    bIsPlacingTower = true;
+}
+
+void ATDPlayerController::UpdatePreviewLocation()
+{
+    if (!PreviewTower)
+    {
+        return;
+    }
+
+    FHitResult Hit;
+    GetHitResultUnderCursor(ECC_Visibility, true, Hit);
+    FVector Loc = Hit.Location;
+    PreviewTower->SetActorLocation(Loc);
+
+    // simple placement check
+    bCanPlaceTower = true;
+    for (TActorIterator<ATowerBase> It(GetWorld()); It; ++It)
+    {
+        if (*It != PreviewTower)
+        {
+            if (FVector::DistSquared(It->GetActorLocation(), Loc) < 10000.f)
+            {
+                bCanPlaceTower = false;
+                break;
+            }
+        }
+    }
+
+    if (SuccessMaterial && FailedMaterial)
+    {
+        TArray<UStaticMeshComponent*> Meshes;
+        PreviewTower->GetComponents<UStaticMeshComponent>(Meshes);
+        for (UStaticMeshComponent* Mesh : Meshes)
+        {
+            int32 NumMats = Mesh->GetNumMaterials();
+            for (int32 i = 0; i < NumMats; ++i)
+            {
+                Mesh->SetMaterial(i, bCanPlaceTower ? SuccessMaterial : FailedMaterial);
+            }
+        }
+    }
+
+    PreviewTower->SetActorHiddenInGame(false);
+}
+
+void ATDPlayerController::FinishPlacingTower()
+{
+    if (!PreviewTower)
+    {
+        bIsPlacingTower = false;
+        return;
+    }
+
+    if (bCanPlaceTower)
+    {
+        if (AGamePlayGameMode* GM = GetWorld()->GetAuthGameMode<AGamePlayGameMode>())
+        {
+            int32 Cost = PreviewTower->GetBuildCost();
+            if (GM->SpendGold(Cost))
+            {
+                FVector Loc = PreviewTower->GetActorLocation();
+                FRotator Rot = PreviewTower->GetActorRotation();
+                GetWorld()->SpawnActor<ATowerBase>(PreviewTower->GetClass(), Loc, Rot);
+            }
+        }
+    }
+
+    PreviewTower->Destroy();
+    PreviewTower = nullptr;
+    bIsPlacingTower = false;
+}
+
+void ATDPlayerController::StartPlacingAttackTower()
+{
+    StartPlacingTower(AttackTowerClass);
+}
+
+void ATDPlayerController::StartPlacingSplashTower()
+{
+    StartPlacingTower(SplashTowerClass);
+}
+
+void ATDPlayerController::StartPlacingCCTower()
+{
+    StartPlacingTower(CCTowerClass);
 }
