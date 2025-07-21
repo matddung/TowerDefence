@@ -223,6 +223,21 @@ bool ATDPlayerController::CanPlaceTowerAt(const FVector& Loc) const
     return true;
 }
 
+void ATDPlayerController::SpawnFeedbackText(const FText& Text, const FVector& Location)
+{
+    if (!FeedbackTextActorClass)
+    {
+        return;
+    }
+
+    FActorSpawnParameters Params;
+    Params.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
+    if (AFloatingSpawnActor* Feedback = GetWorld()->SpawnActor<AFloatingSpawnActor>(FeedbackTextActorClass, Location, FRotator::ZeroRotator, Params))
+    {
+        Feedback->SetText(Text);
+    }
+}
+
 void ATDPlayerController::FinishPlacingTower()
 {
     if (!PreviewTower)
@@ -247,15 +262,14 @@ void ATDPlayerController::FinishPlacingTower()
         }
     }
 
-    if (!bPlaced && FeedbackTextActorClass)
+    FVector FeedbackLoc = PreviewTower->GetActorLocation() + FVector(0.f, 0.f, 100.f);
+    if (bPlaced)
     {
-        FVector Loc = PreviewTower->GetActorLocation() + FVector(0.f, 0.f, 100.f);
-        FActorSpawnParameters Params;
-        Params.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
-        if (AFloatingSpawnActor* Warning = GetWorld()->SpawnActor<AFloatingSpawnActor>(FeedbackTextActorClass, Loc, FRotator::ZeroRotator, Params))
-        {
-            Warning->SetText(FText::FromString(TEXT("Cannot Build")));
-        }
+        SpawnFeedbackText(FText::FromString(TEXT("Tower Built")), FeedbackLoc);
+    }
+    else
+    {
+        SpawnFeedbackText(FText::FromString(TEXT("Cannot Build")), FeedbackLoc);
     }
 
     PreviewTower->Destroy();

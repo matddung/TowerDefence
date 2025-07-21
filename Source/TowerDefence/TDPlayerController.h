@@ -33,6 +33,7 @@ protected:
 
     bool bIsPlacingTower = false;
     bool bCanPlaceTower = false;
+
     UPROPERTY()
     ATowerBase* PreviewTower = nullptr;
 
@@ -40,6 +41,8 @@ public:
     void StartPlacingAttackTower();
     void StartPlacingSplashTower();
     void StartPlacingCCTower();
+
+    void SpawnFeedbackText(const FText& Text, const FVector& Location);
 
 protected:
     TSubclassOf<ATowerBase> AttackTowerClass;

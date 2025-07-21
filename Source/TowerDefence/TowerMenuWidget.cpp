@@ -2,6 +2,7 @@
 #include "TowerBase.h"
 #include "GamePlayGameMode.h"
 #include "TooltipWidget.h"
+#include "TDPlayerController.h"
 
 #include "Components/Button.h"
 #include "Components/TextBlock.h"
@@ -90,15 +91,28 @@ void UTowerMenuWidget::OnSellClicked()
 {
     if (OwnerTower)
     {
+        ATDPlayerController* PC = Cast<ATDPlayerController>(OwnerTower->GetWorld()->GetFirstPlayerController());
+        FVector FeedbackLoc = OwnerTower->GetActorLocation() + FVector(0.f, 0.f, 100.f);
+
         if (AGamePlayGameMode* GM = OwnerTower->GetWorld()->GetAuthGameMode<AGamePlayGameMode>())
         {
             if (GM->IsWaveInProgress())
             {
                 UE_LOG(LogTemp, Warning, TEXT("Cannot sell tower during wave"));
+                if (PC)
+                {
+                    PC->SpawnFeedbackText(FText::FromString(TEXT("Cannot Sell")), FeedbackLoc);
+                }
                 return;
             }
         }
+
         OwnerTower->SellTower();
+
+        if (PC)
+        {
+            PC->SpawnFeedbackText(FText::FromString(TEXT("Tower Sold")), FeedbackLoc);
+        }
     }
 }
 
@@ -106,14 +120,29 @@ void UTowerMenuWidget::OnUpgradeClicked()
 {
     if (OwnerTower)
     {
+        ATDPlayerController* PC = Cast<ATDPlayerController>(OwnerTower->GetWorld()->GetFirstPlayerController());
+        FVector FeedbackLoc = OwnerTower->GetActorLocation() + FVector(0.f, 0.f, 100.f);
+        int32 PrevLevel = OwnerTower->GetCurrentLevel();
+
         if (AGamePlayGameMode* GM = OwnerTower->GetWorld()->GetAuthGameMode<AGamePlayGameMode>())
         {
             if (GM->IsWaveInProgress())
             {
                 UE_LOG(LogTemp, Warning, TEXT("Cannot upgrade tower during wave"));
+                if (PC)
+                {
+                    PC->SpawnFeedbackText(FText::FromString(TEXT("Cannot Upgrade")), FeedbackLoc);
+                }
                 return;
             }
         }
+
         OwnerTower->UpgradeTower();
+
+        bool bUpgraded = OwnerTower->GetCurrentLevel() > PrevLevel;
+        if (PC)
+        {
+            PC->SpawnFeedbackText(bUpgraded ? FText::FromString(TEXT("Tower Upgraded")) : FText::FromString(TEXT("Cannot Upgrade")), FeedbackLoc);
+        }
     }
 }
