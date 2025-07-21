@@ -80,6 +80,12 @@ void ATDPlayerController::PlayerTick(float DeltaTime)
 
 void ATDPlayerController::HandleRightClick()
 {
+    if (bIsPlacingTower)
+    {
+        CancelPlacingTower();
+        return;
+    }
+
     FHitResult Hit;
     GetHitResultUnderCursor(ECC_Visibility, true, Hit);
 
@@ -234,6 +240,17 @@ void ATDPlayerController::FinishPlacingTower()
 
     PreviewTower->Destroy();
     PreviewTower = nullptr;
+    bIsPlacingTower = false;
+}
+
+void ATDPlayerController::CancelPlacingTower()
+{
+    if (PreviewTower)
+    {
+        PreviewTower->Destroy();
+        PreviewTower = nullptr;
+    }
+
     bIsPlacingTower = false;
 }
 

@@ -25,6 +25,7 @@ protected:
 
     void StartPlacingTower(TSubclassOf<ATowerBase> TowerClass);
     void FinishPlacingTower();
+    void CancelPlacingTower();
 
     void UpdatePreviewLocation();
     bool CanPlaceTowerAt(const FVector& Loc) const;
