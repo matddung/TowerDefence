@@ -2,6 +2,9 @@
 #include "GamePlayGameMode.h"
 #include "TDPlayerController.h"
 #include "TowerBase.h"
+#include "AttackTower.h"
+#include "SplashTower.h"
+#include "CCTower.h"
 
 #include "Components/Button.h"
 #include "Components/WidgetSwitcher.h"
@@ -22,21 +25,40 @@ void UGameHUDWidget::NativeConstruct()
         UTooltipWidget* AttackTip = CreateWidget<UTooltipWidget>(this, TooltipWidgetClass);
         if (AttackTip)
         {
-            AttackTip->SetTooltipText(FText::FromString("Basic Attack Tower\nCost: 100 Gold"));
+
+            int32 AttackCost = 0;
+            if (const AAttackTower* DefaultAttack = Cast<AAttackTower>(AAttackTower::StaticClass()->GetDefaultObject()))
+            {
+                AttackCost = DefaultAttack->GetBuildCost();
+            }
+
+            AttackTip->SetTooltipText(FText::FromString(FString::Printf(TEXT("Basic Attack Tower\nCost: %d Gold"), AttackCost)));
             AttackBuildingButton->SetToolTip(AttackTip);
         }
 
         UTooltipWidget* SplashTip = CreateWidget<UTooltipWidget>(this, TooltipWidgetClass);
         if (SplashTip)
         {
-            SplashTip->SetTooltipText(FText::FromString("Splash Attack Tower\nCost: 150 Gold"));
+            int32 SplashCost = 0;
+            if (const ASplashTower* DefaultSplash = Cast<ASplashTower>(ASplashTower::StaticClass()->GetDefaultObject()))
+            {
+                SplashCost = DefaultSplash->GetBuildCost();
+            }
+
+            SplashTip->SetTooltipText(FText::FromString(FString::Printf(TEXT("Splash Attack Tower\nCost: %d Gold"), SplashCost)));
             SplashBuildingButton->SetToolTip(SplashTip);
         }
 
         UTooltipWidget* CCTip = CreateWidget<UTooltipWidget>(this, TooltipWidgetClass);
         if (CCTip)
         {
-            CCTip->SetTooltipText(FText::FromString("Put on CC Tower\nCost: 120 Gold\nSlows enemies"));
+            int32 CCCost = 0;
+            if (const ACCTower* DefaultCC = Cast<ACCTower>(ACCTower::StaticClass()->GetDefaultObject()))
+            {
+                CCCost = DefaultCC->GetBuildCost();
+            }
+
+            CCTip->SetTooltipText(FText::FromString(FString::Printf(TEXT("Put on CC Tower\nCost: %d Gold\nSlows enemies"), CCCost)));
             CCBuildingButton->SetToolTip(CCTip);
         }
     }

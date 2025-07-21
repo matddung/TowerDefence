@@ -32,4 +32,13 @@ protected:
 private:
     UPROPERTY()
     ATowerBase* OwnerTower;
+
+    UPROPERTY(EditDefaultsOnly, Category = "UI")
+    TSubclassOf<class UTooltipWidget> TooltipWidgetClass;
+
+    UPROPERTY()
+    class UTooltipWidget* SellTooltip;
+
+    UPROPERTY()
+    class UTooltipWidget* UpgradeTooltip;
 };

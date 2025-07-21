@@ -1,6 +1,7 @@
 #include "TowerMenuWidget.h"
 #include "TowerBase.h"
 #include "GamePlayGameMode.h"
+#include "TooltipWidget.h"
 
 #include "Components/Button.h"
 #include "Components/TextBlock.h"
@@ -16,6 +17,20 @@ void UTowerMenuWidget::Init(ATowerBase* InOwner)
     {
         UpgradeButton->OnClicked.AddDynamic(this, &UTowerMenuWidget::OnUpgradeClicked);
     }
+    if (TooltipWidgetClass)
+    {
+        SellTooltip = CreateWidget<UTooltipWidget>(this, TooltipWidgetClass);
+        if (SellTooltip && SellButton)
+        {
+            SellButton->SetToolTip(SellTooltip);
+        }
+
+        UpgradeTooltip = CreateWidget<UTooltipWidget>(this, TooltipWidgetClass);
+        if (UpgradeTooltip && UpgradeButton)
+        {
+            UpgradeButton->SetToolTip(UpgradeTooltip);
+        }
+    }
 
     UpdateInfo();
 }
@@ -29,6 +44,7 @@ void UTowerMenuWidget::UpdateInfo()
 
     const int32 CurrentLevel = OwnerTower->GetCurrentLevel();
     const int32 NextCost = OwnerTower->GetBuildCost(CurrentLevel + 1);
+    const int32 SellRefund = FMath::RoundToInt(OwnerTower->GetBuildCost(CurrentLevel) * 0.7f);
 
     if (CurrentLevelText)
     {
@@ -47,6 +63,26 @@ void UTowerMenuWidget::UpdateInfo()
     if (UpgradeButton)
     {
         UpgradeButton->SetIsEnabled(NextCost > 0);
+    }
+
+    if (SellTooltip)
+    {
+        FString SellString = FString::Printf(TEXT("Sell for: %d Gold"), SellRefund);
+        SellTooltip->SetTooltipText(FText::FromString(SellString));
+    }
+
+    if (UpgradeTooltip)
+    {
+        FString UpgradeString;
+        if (NextCost > 0)
+        {
+            UpgradeString = FString::Printf(TEXT("Upgrade Cost: %d Gold"), NextCost);
+        }
+        else
+        {
+            UpgradeString = TEXT("Max Level");
+        }
+        UpgradeTooltip->SetTooltipText(FText::FromString(UpgradeString));
     }
 }
 
