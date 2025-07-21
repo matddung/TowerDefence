@@ -2,6 +2,7 @@
 #include "TowerBase.h"
 #include "GamePlayGameMode.h"
 #include "PathSplineActor.h"
+#include "FloatingSpawnActor.h"
 
 #include "Kismet/GameplayStatics.h"
 #include "InputCoreTypes.h"
@@ -40,6 +41,12 @@ ATDPlayerController::ATDPlayerController()
     if (FailedMatObj.Succeeded())
     {
         FailedMaterial = FailedMatObj.Object;
+    }
+
+    static ConstructorHelpers::FClassFinder<AFloatingSpawnActor> FeedbackBP(TEXT("/Game/UI/BP_FloatingSpawnActor.BP_FloatingSpawnActor_C"));
+    if (FeedbackBP.Succeeded())
+    {
+        FeedbackTextActorClass = FeedbackBP.Class;
     }
 }
 
@@ -224,6 +231,7 @@ void ATDPlayerController::FinishPlacingTower()
         return;
     }
 
+    bool bPlaced = false;
     if (bCanPlaceTower && CanPlaceTowerAt(PreviewTower->GetActorLocation()))
     {
         if (AGamePlayGameMode* GM = GetWorld()->GetAuthGameMode<AGamePlayGameMode>())
@@ -234,7 +242,19 @@ void ATDPlayerController::FinishPlacingTower()
                 FVector Loc = PreviewTower->GetActorLocation();
                 FRotator Rot = PreviewTower->GetActorRotation();
                 GetWorld()->SpawnActor<ATowerBase>(PreviewTower->GetClass(), Loc, Rot);
+                bPlaced = true;
             }
+        }
+    }
+
+    if (!bPlaced && FeedbackTextActorClass)
+    {
+        FVector Loc = PreviewTower->GetActorLocation() + FVector(0.f, 0.f, 100.f);
+        FActorSpawnParameters Params;
+        Params.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
+        if (AFloatingSpawnActor* Warning = GetWorld()->SpawnActor<AFloatingSpawnActor>(FeedbackTextActorClass, Loc, FRotator::ZeroRotator, Params))
+        {
+            Warning->SetText(FText::FromString(TEXT("Cannot Build")));
         }
     }
 

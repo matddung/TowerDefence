@@ -76,7 +76,7 @@ void UTowerMenuWidget::UpdateInfo()
         FString UpgradeString;
         if (NextCost > 0)
         {
-            UpgradeString = FString::Printf(TEXT("Upgrade Cost: %d Gold"), NextCost);
+            UpgradeString = FString::Printf(TEXT("Upgrade Cost: %d Gold"), NextCost); 
         }
         else
         {

@@ -42,6 +42,17 @@ void AFloatingSpawnActor::Tick(float DeltaTime)
     }
 }
 
+void AFloatingSpawnActor::SetText(const FText& InText)
+{
+    if (UUserWidget* Widget = WidgetComponent->GetWidget())
+    {
+        if (UTextBlock* Text = Cast<UTextBlock>(Widget->GetWidgetFromName(TEXT("DamageText"))))
+        {
+            Text->SetText(InText);
+        }
+    }
+}
+
 void AFloatingSpawnActor::SetDamage(float Damage)
 {
     if (UUserWidget* Widget = WidgetComponent->GetWidget())

@@ -5,6 +5,7 @@
 #include "TDPlayerController.generated.h"
 
 class ATowerBase;
+class AFloatingSpawnActor;
 
 UCLASS()
 class TOWERDEFENCE_API ATDPlayerController : public APlayerController
@@ -53,4 +54,7 @@ protected:
 
     UPROPERTY()
     ATowerBase* SelectedTower = nullptr;
+
+    UPROPERTY(EditDefaultsOnly, Category = "UI")
+    TSubclassOf<class AFloatingSpawnActor> FeedbackTextActorClass;
 };

@@ -13,6 +13,7 @@ public:
     AFloatingSpawnActor();
 
     void SetDamage(float Damage);
+    void SetText(const FText& InText);
 
     virtual void Tick(float DeltaTime) override;
     virtual void BeginPlay() override;
