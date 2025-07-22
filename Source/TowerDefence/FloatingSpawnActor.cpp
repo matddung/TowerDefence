@@ -13,7 +13,7 @@ AFloatingSpawnActor::AFloatingSpawnActor()
     WidgetComponent->SetDrawSize(FVector2D(150, 50));
     RootComponent = WidgetComponent;
 
-    static ConstructorHelpers::FClassFinder<UUserWidget> DamageTextWidgetClass(TEXT("/Game/UI/WBP_DamageText.WBP_DamageText_C"));
+    static ConstructorHelpers::FClassFinder<UUserWidget> DamageTextWidgetClass(TEXT("/Game/UI/WBP_DamageText"));
     if (DamageTextWidgetClass.Succeeded())
     {
         WidgetComponent->SetWidgetClass(DamageTextWidgetClass.Class);

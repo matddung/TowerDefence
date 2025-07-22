@@ -173,3 +173,10 @@ void AGamePlayGameMode::AddGold(int32 Amount)
         GameHUDWidget->SetGoldAmount(Gold);
     }
 }
+
+void AGamePlayGameMode::DecreaseTowerHealth(int32 Amount)
+{
+    TowerHealth -= Amount;
+    TowerHealth = FMath::Max(0, TowerHealth);
+    UE_LOG(LogTemp, Log, TEXT("Tower Health: %d"), TowerHealth);
+}

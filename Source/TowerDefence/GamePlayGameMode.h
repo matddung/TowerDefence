@@ -32,6 +32,12 @@ public:
 
 	bool IsWaveInProgress() const { return bWaveInProgress; }
 
+	UFUNCTION(BlueprintCallable, Category = "Tower")
+	void DecreaseTowerHealth(int32 Amount = 1);
+
+	UFUNCTION(BlueprintCallable, Category = "Tower")
+	int32 GetTowerHealth() const { return TowerHealth; }
+
 protected:
 	virtual void BeginPlay() override;
 
@@ -61,6 +67,9 @@ protected:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Economy")
 	int32 Gold = 500;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Tower")
+	int32 TowerHealth = 20;
 
 	bool bWaveInProgress = false;
 };

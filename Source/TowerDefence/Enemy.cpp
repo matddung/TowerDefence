@@ -3,6 +3,7 @@
 #include "EnemyAnimInstance.h"
 #include "EnemyHPBarWidget.h"
 #include "FloatingSpawnActor.h"
+#include "GamePlayGameMode.h"
 
 #include "Kismet/GameplayStatics.h"
 #include "Components/SplineComponent.h"
@@ -165,6 +166,11 @@ void AEnemy::DoAttack()
     if (AnimInst && AnimInst->AttackMontage)
     {
         AnimInst->PlayAttackMontage();
+    }
+
+    if (AGamePlayGameMode* GM = GetWorld()->GetAuthGameMode<AGamePlayGameMode>())
+    {
+        GM->DecreaseTowerHealth(1);
     }
 }
 
