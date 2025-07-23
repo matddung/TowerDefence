@@ -9,4 +9,13 @@ class TOWERDEFENCE_API UGameOverWidget : public UUserWidget
 {
 	GENERATED_BODY()
 	
+public:
+    virtual void NativeConstruct() override;
+
+protected:
+    UFUNCTION()
+    void OnMainMenuClicked();
+
+    UPROPERTY(meta = (BindWidget))
+    class UButton* MainMenuButton = nullptr;
 };

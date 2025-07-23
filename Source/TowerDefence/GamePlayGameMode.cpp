@@ -227,5 +227,6 @@ void AGamePlayGameMode::DecreaseTowerHealth(int32 Amount)
 
 void AGamePlayGameMode::HandleGameOver()
 {
-    UGameplayStatics::OpenLevel(this, FName("GameOverMap"));
+    const FString Options = TEXT("game=/Script/TowerDefence.GameOverGameMode");
+    UGameplayStatics::OpenLevel(this, FName(TEXT("/Game/Maps/GameOverMap")), true, Options);
 }
