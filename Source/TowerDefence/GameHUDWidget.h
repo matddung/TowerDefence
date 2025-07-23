@@ -71,4 +71,12 @@ public:
 
     UPROPERTY(EditDefaultsOnly, Category = "UI")
     TSubclassOf<class UTooltipWidget> TooltipWidgetClass;
+
+private:
+    void UpdateBuildButtonsEnabled();
+
+    int32 CurrentGold = 0;
+    int32 AttackTowerCost = 0;
+    int32 SplashTowerCost = 0;
+    int32 CCTowerCost = 0;
 };

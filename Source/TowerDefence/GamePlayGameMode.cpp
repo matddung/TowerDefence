@@ -154,6 +154,8 @@ void AGamePlayGameMode::HandleEnemyDestroyed(AActor* DestroyedActor)
         {
             GameHUDWidget->SetStartButtonEnabled(true);
         }
+
+        AddGold(WaveClearReward);
     }
 }
 

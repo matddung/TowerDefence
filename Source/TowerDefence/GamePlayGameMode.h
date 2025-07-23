@@ -71,7 +71,10 @@ protected:
 	int32 AliveEnemyCount = 0;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Economy")
-	int32 Gold = 500;
+	int32 Gold = 100;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Economy")
+	int32 WaveClearReward = 30;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Tower")
 	int32 TowerHealth = 20;

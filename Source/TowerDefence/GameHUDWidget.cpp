@@ -25,40 +25,39 @@ void UGameHUDWidget::NativeConstruct()
         UTooltipWidget* AttackTip = CreateWidget<UTooltipWidget>(this, TooltipWidgetClass);
         if (AttackTip)
         {
-
-            int32 AttackCost = 0;
+            AttackTowerCost = 0;
             if (const AAttackTower* DefaultAttack = Cast<AAttackTower>(AAttackTower::StaticClass()->GetDefaultObject()))
             {
-                AttackCost = DefaultAttack->GetBuildCost();
+                AttackTowerCost = DefaultAttack->GetBuildCost();
             }
 
-            AttackTip->SetTooltipText(FText::FromString(FString::Printf(TEXT("Basic Attack Tower\nCost: %d Gold"), AttackCost)));
+            AttackTip->SetTooltipText(FText::FromString(FString::Printf(TEXT("Basic Attack Tower\nCost: %d Gold"), AttackTowerCost)));
             AttackBuildingButton->SetToolTip(AttackTip);
         }
 
         UTooltipWidget* SplashTip = CreateWidget<UTooltipWidget>(this, TooltipWidgetClass);
         if (SplashTip)
         {
-            int32 SplashCost = 0;
+            SplashTowerCost = 0;
             if (const ASplashTower* DefaultSplash = Cast<ASplashTower>(ASplashTower::StaticClass()->GetDefaultObject()))
             {
-                SplashCost = DefaultSplash->GetBuildCost();
+                SplashTowerCost = DefaultSplash->GetBuildCost();
             }
 
-            SplashTip->SetTooltipText(FText::FromString(FString::Printf(TEXT("Splash Attack Tower\nCost: %d Gold"), SplashCost)));
+            SplashTip->SetTooltipText(FText::FromString(FString::Printf(TEXT("Splash Attack Tower\nCost: %d Gold"), SplashTowerCost)));
             SplashBuildingButton->SetToolTip(SplashTip);
         }
 
         UTooltipWidget* CCTip = CreateWidget<UTooltipWidget>(this, TooltipWidgetClass);
         if (CCTip)
         {
-            int32 CCCost = 0;
+            CCTowerCost = 0;
             if (const ACCTower* DefaultCC = Cast<ACCTower>(ACCTower::StaticClass()->GetDefaultObject()))
             {
-                CCCost = DefaultCC->GetBuildCost();
+                CCTowerCost = DefaultCC->GetBuildCost();
             }
 
-            CCTip->SetTooltipText(FText::FromString(FString::Printf(TEXT("Put on CC Tower\nCost: %d Gold\nSlows enemies"), CCCost)));
+            CCTip->SetTooltipText(FText::FromString(FString::Printf(TEXT("Put on CC Tower\nCost: %d Gold\nSlows enemies"), CCTowerCost)));
             CCBuildingButton->SetToolTip(CCTip);
         }
     }
@@ -198,11 +197,15 @@ void UGameHUDWidget::SetStartButtonEnabled(bool bEnabled)
 
 void UGameHUDWidget::SetGoldAmount(int32 Amount)
 {
+    CurrentGold = Amount;
+
     if (GoldTextBlock1 && GoldTextBlock2)
     {
         GoldTextBlock1->SetText(FText::FromString(FString::Printf(TEXT("Gold: %d"), Amount)));
         GoldTextBlock2->SetText(FText::FromString(FString::Printf(TEXT("Gold: %d"), Amount)));
     }
+
+    UpdateBuildButtonsEnabled();
 }
 
 void UGameHUDWidget::SetTowerHealth(int32 Health)
@@ -211,5 +214,23 @@ void UGameHUDWidget::SetTowerHealth(int32 Health)
     {
         TowerHealthTextBlock1->SetText(FText::FromString(FString::Printf(TEXT("HP : %d"), Health)));
         TowerHealthTextBlock2->SetText(FText::FromString(FString::Printf(TEXT("HP : %d"), Health)));
+    }
+}
+
+void UGameHUDWidget::UpdateBuildButtonsEnabled()
+{
+    if (AttackBuildingButton)
+    {
+        AttackBuildingButton->SetIsEnabled(CurrentGold >= AttackTowerCost);
+    }
+
+    if (SplashBuildingButton)
+    {
+        SplashBuildingButton->SetIsEnabled(CurrentGold >= SplashTowerCost);
+    }
+
+    if (CCBuildingButton)
+    {
+        CCBuildingButton->SetIsEnabled(CurrentGold >= CCTowerCost);
     }
 }
