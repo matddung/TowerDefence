@@ -82,6 +82,14 @@ void ATDPlayerController::PlayerTick(float DeltaTime)
     if (bIsPlacingTower && PreviewTower)
     {
         UpdatePreviewLocation();
+
+        if (AGamePlayGameMode* GM = GetWorld()->GetAuthGameMode<AGamePlayGameMode>())
+        {
+            if (GM->IsWaveInProgress())
+            {
+                CancelPlacingTower();
+            }
+        }
     }
 }
 
@@ -286,6 +294,11 @@ void ATDPlayerController::CancelPlacingTower()
     }
 
     bIsPlacingTower = false;
+}
+
+void ATDPlayerController::CancelTowerPlacement()
+{
+    CancelPlacingTower();
 }
 
 void ATDPlayerController::StartPlacingAttackTower()

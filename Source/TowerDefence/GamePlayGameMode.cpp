@@ -9,6 +9,7 @@
 #include "Blueprint/UserWidget.h"
 #include "Engine/DataTable.h"
 #include "Kismet/GameplayStatics.h"
+#include "Components/WidgetComponent.h"
 
 AGamePlayGameMode::AGamePlayGameMode()
 {
@@ -54,12 +55,21 @@ void AGamePlayGameMode::BeginPlay()
         {
             GameHUDWidget->AddToViewport();
             GameHUDWidget->SetGoldAmount(Gold);
+            GameHUDWidget->SetTowerHealth(TowerHealth);
         }
     }
 }
 
 void AGamePlayGameMode::StartNextWave()
 {
+    if (APlayerController* PC = UGameplayStatics::GetPlayerController(this, 0))
+    {
+        if (ATDPlayerController* TDPC = Cast<ATDPlayerController>(PC))
+        {
+            TDPC->CancelTowerPlacement();
+        }
+    }
+
     if (AliveEnemyCount > 0)
     {
         if (GameHUDWidget)
@@ -178,5 +188,44 @@ void AGamePlayGameMode::DecreaseTowerHealth(int32 Amount)
 {
     TowerHealth -= Amount;
     TowerHealth = FMath::Max(0, TowerHealth);
-    UE_LOG(LogTemp, Log, TEXT("Tower Health: %d"), TowerHealth);
+
+    if (GameHUDWidget)
+    {
+        GameHUDWidget->SetTowerHealth(TowerHealth);
+    }
+
+    if (TowerHealth <= 0 && !bTowerDestroyed)
+    {
+        bTowerDestroyed = true;
+
+        if (GameHUDWidget)
+        {
+            GameHUDWidget->RemoveFromParent();
+            GameHUDWidget = nullptr;
+        }
+
+        for (TActorIterator<AEnemy> It(GetWorld()); It; ++It)
+        {
+            if (It->HPBarWidget)
+            {
+                It->HPBarWidget->SetVisibility(false);
+            }
+        }
+
+
+        if (APlayerController* PC = UGameplayStatics::GetPlayerController(this, 0))
+        {
+            if (PC->PlayerCameraManager)
+            {
+                PC->PlayerCameraManager->StartCameraFade(0.f, 1.f, 1.f, FLinearColor::Gray, false, true);
+            }
+        }
+
+        GetWorldTimerManager().SetTimer(GameOverTimerHandle, this, &AGamePlayGameMode::HandleGameOver, 3.f, false);
+    }
+}
+
+void AGamePlayGameMode::HandleGameOver()
+{
+    UGameplayStatics::OpenLevel(this, FName("GameOverMap"));
 }

@@ -35,6 +35,9 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Tower")
 	void DecreaseTowerHealth(int32 Amount = 1);
 
+	UFUNCTION()
+	void HandleGameOver();
+
 	UFUNCTION(BlueprintCallable, Category = "Tower")
 	int32 GetTowerHealth() const { return TowerHealth; }
 
@@ -60,6 +63,8 @@ protected:
 	int32 RemainingSpawnCount = 0;
 	FName CurrentWaveRowName;
 
+	FTimerHandle GameOverTimerHandle;
+
 	UPROPERTY()
 	class UGameHUDWidget* GameHUDWidget = nullptr;
 
@@ -72,4 +77,6 @@ protected:
 	int32 TowerHealth = 20;
 
 	bool bWaveInProgress = false;
+
+	bool bTowerDestroyed = false;
 };

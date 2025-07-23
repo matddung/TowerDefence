@@ -34,6 +34,8 @@ public:
 
     void SetGoldAmount(int32 Amount);
 
+    void SetTowerHealth(int32 Health);
+
     UPROPERTY(meta = (BindWidget))
     class UWidgetSwitcher* MenuSwitcher;
 
@@ -60,6 +62,12 @@ public:
 
     UPROPERTY(meta = (BindWidget))
     class UTextBlock* GoldTextBlock2;
+
+    UPROPERTY(meta = (BindWidget))
+    class UTextBlock* TowerHealthTextBlock1;
+
+    UPROPERTY(meta = (BindWidget))
+    class UTextBlock* TowerHealthTextBlock2;
 
     UPROPERTY(EditDefaultsOnly, Category = "UI")
     TSubclassOf<class UTooltipWidget> TooltipWidgetClass;

@@ -204,3 +204,12 @@ void UGameHUDWidget::SetGoldAmount(int32 Amount)
         GoldTextBlock2->SetText(FText::FromString(FString::Printf(TEXT("Gold: %d"), Amount)));
     }
 }
+
+void UGameHUDWidget::SetTowerHealth(int32 Health)
+{
+    if (TowerHealthTextBlock1 && TowerHealthTextBlock2)
+    {
+        TowerHealthTextBlock1->SetText(FText::FromString(FString::Printf(TEXT("HP : %d"), Health)));
+        TowerHealthTextBlock2->SetText(FText::FromString(FString::Printf(TEXT("HP : %d"), Health)));
+    }
+}
