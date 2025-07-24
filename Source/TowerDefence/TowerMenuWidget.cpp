@@ -98,7 +98,6 @@ void UTowerMenuWidget::OnSellClicked()
         {
             if (GM->IsWaveInProgress())
             {
-                UE_LOG(LogTemp, Warning, TEXT("Cannot sell tower during wave"));
                 if (PC)
                 {
                     PC->SpawnFeedbackText(FText::FromString(TEXT("Cannot Sell")), FeedbackLoc);
@@ -128,7 +127,6 @@ void UTowerMenuWidget::OnUpgradeClicked()
         {
             if (GM->IsWaveInProgress())
             {
-                UE_LOG(LogTemp, Warning, TEXT("Cannot upgrade tower during wave"));
                 if (PC)
                 {
                     PC->SpawnFeedbackText(FText::FromString(TEXT("Cannot Upgrade")), FeedbackLoc);

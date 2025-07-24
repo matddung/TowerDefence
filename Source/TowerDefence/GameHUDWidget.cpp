@@ -100,7 +100,6 @@ void UGameHUDWidget::NativeConstruct()
 
 void UGameHUDWidget::OnStartClicked()
 {
-    UE_LOG(LogTemp, Log, TEXT("Start button clicked"));
     if (AGamePlayGameMode* GM = GetWorld()->GetAuthGameMode<AGamePlayGameMode>())
     {
         GM->StartNextWave();
@@ -109,12 +108,10 @@ void UGameHUDWidget::OnStartClicked()
 
 void UGameHUDWidget::OnBuildClicked()
 {
-    UE_LOG(LogTemp, Log, TEXT("Build button clicked"));
     if (AGamePlayGameMode* GM = GetWorld()->GetAuthGameMode<AGamePlayGameMode>())
     {
         if (GM->IsWaveInProgress())
         {
-            UE_LOG(LogTemp, Warning, TEXT("Cannot build towers during wave"));
             return;
         }
     }
@@ -126,7 +123,6 @@ void UGameHUDWidget::OnBuildClicked()
 
 void UGameHUDWidget::OnBackClicked()
 {
-    UE_LOG(LogTemp, Log, TEXT("Back to main menu"));
     if (MenuSwitcher)
     {
         MenuSwitcher->SetActiveWidgetIndex(0);
@@ -135,12 +131,10 @@ void UGameHUDWidget::OnBackClicked()
 
 void UGameHUDWidget::OnAttackClicked()
 {
-    UE_LOG(LogTemp, Log, TEXT("Build Attack button clicked"));
     if (AGamePlayGameMode* GM = GetWorld()->GetAuthGameMode<AGamePlayGameMode>())
     {
         if (GM->IsWaveInProgress())
         {
-            UE_LOG(LogTemp, Warning, TEXT("Cannot build towers during wave"));
             return;
         }
     }
@@ -153,12 +147,10 @@ void UGameHUDWidget::OnAttackClicked()
 
 void UGameHUDWidget::OnSplashClicked()
 {
-    UE_LOG(LogTemp, Log, TEXT("Build Splash button clicked"));
     if (AGamePlayGameMode* GM = GetWorld()->GetAuthGameMode<AGamePlayGameMode>())
     {
         if (GM->IsWaveInProgress())
         {
-            UE_LOG(LogTemp, Warning, TEXT("Cannot build towers during wave"));
             return;
         }
     }
@@ -171,12 +163,10 @@ void UGameHUDWidget::OnSplashClicked()
 
 void UGameHUDWidget::OnCCClicked()
 {
-    UE_LOG(LogTemp, Log, TEXT("Build CC button clicked"));
     if (AGamePlayGameMode* GM = GetWorld()->GetAuthGameMode<AGamePlayGameMode>())
     {
         if (GM->IsWaveInProgress())
         {
-            UE_LOG(LogTemp, Warning, TEXT("Cannot build towers during wave"));
             return;
         }
     }

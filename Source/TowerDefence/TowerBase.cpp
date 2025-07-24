@@ -135,7 +135,6 @@ void ATowerBase::SellTower()
 	{
 		if (GM->IsWaveInProgress())
 		{
-			UE_LOG(LogTemp, Warning, TEXT("Cannot sell tower during wave"));
 			return;
 		}
 
@@ -159,7 +158,6 @@ void ATowerBase::UpgradeTower()
 	{
 		if (GM->IsWaveInProgress())
 		{
-			UE_LOG(LogTemp, Warning, TEXT("Cannot upgrade tower during wave"));
 			return;
 		}
 
