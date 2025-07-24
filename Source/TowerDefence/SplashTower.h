@@ -46,6 +46,4 @@ public:
 
 	UPROPERTY(VisibleAnywhere)
 	FSplashTowerData TowerData;
-
-	FName TowerRowName = "1";
 };

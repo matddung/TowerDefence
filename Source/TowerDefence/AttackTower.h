@@ -43,6 +43,4 @@ public:
 
 	UPROPERTY(VisibleAnywhere)
 	FAttackTowerData TowerData;
-
-	FName TowerRowName = "1";
 };

@@ -66,4 +66,18 @@ protected:
 
 	UPROPERTY(EditDefaultsOnly, Category = "UI")
 	TSubclassOf<class UTowerMenuWidget> MenuWidgetClass;
+
+	template <typename RowType>
+	int32 GetRowCost(const UDataTable* Table, int32 Level) const {
+		if (!Table)
+			return 0;
+
+		FName Row = FName(*FString::FromInt(Level));
+		if (const RowType* Data =
+			Table->FindRow<RowType>(Row, TEXT("GetBuildCost"))) {
+			return Data->BuildCost;
+		}
+
+		return 0;
+	}
 };

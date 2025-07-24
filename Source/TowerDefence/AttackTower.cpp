@@ -15,7 +15,8 @@ void AAttackTower::BeginPlay()
 
     if (TowerDataTable)
     {
-        const FAttackTowerData* Data = TowerDataTable->FindRow<FAttackTowerData>(TowerRowName, TEXT("TowerData Lookup"));
+        FName RowName = FName(*FString::FromInt(CurrentLevel));
+        const FAttackTowerData* Data = TowerDataTable->FindRow<FAttackTowerData>(RowName, TEXT("TowerData Lookup"));
         if (Data)
         {
             TowerData = *Data;
@@ -40,12 +41,7 @@ int32 AAttackTower::GetBuildCost(int32 Level) const
 
     if (TowerDataTable)
     {
-        FName Row = FName(*FString::FromInt(Level));
-        const FAttackTowerData* Data = TowerDataTable->FindRow<FAttackTowerData>(Row, TEXT("GetBuildCost"));
-        if (Data)
-        {
-            return Data->BuildCost;
-        }
+        return GetRowCost<FAttackTowerData>(TowerDataTable, Level);
     }
 
     return 0;
@@ -55,8 +51,8 @@ void AAttackTower::ReloadData()
 {
     if (TowerDataTable)
     {
-        TowerRowName = FName(*FString::FromInt(CurrentLevel));
-        const FAttackTowerData* Data = TowerDataTable->FindRow<FAttackTowerData>(TowerRowName, TEXT("ReloadData"));
+        FName RowName = FName(*FString::FromInt(CurrentLevel));
+        const FAttackTowerData* Data = TowerDataTable->FindRow<FAttackTowerData>(RowName, TEXT("ReloadData"));
         if (Data)
         {
             TowerData = *Data;

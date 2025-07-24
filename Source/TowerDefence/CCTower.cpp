@@ -19,7 +19,8 @@ void ACCTower::BeginPlay()
 
     if (TowerDataTable)
     {
-        const FCCTowerData* Data = TowerDataTable->FindRow<FCCTowerData>(TowerRowName, TEXT("TowerData Lookup"));
+        FName RowName = FName(*FString::FromInt(CurrentLevel));
+        const FCCTowerData* Data = TowerDataTable->FindRow<FCCTowerData>(RowName, TEXT("TowerData Lookup"));
         if (Data)
         {
             TowerData = *Data;
@@ -96,12 +97,7 @@ int32 ACCTower::GetBuildCost(int32 Level) const
 
     if (TowerDataTable)
     {
-        FName Row = FName(*FString::FromInt(Level));
-        const FCCTowerData* Data = TowerDataTable->FindRow<FCCTowerData>(Row, TEXT("GetBuildCost"));
-        if (Data)
-        {
-            return Data->BuildCost;
-        }
+        return GetRowCost<FCCTowerData>(TowerDataTable, Level);
     }
 
     return 0;
@@ -111,8 +107,8 @@ void ACCTower::ReloadData()
 {
     if (TowerDataTable)
     {
-        TowerRowName = FName(*FString::FromInt(CurrentLevel));
-        const FCCTowerData* Data = TowerDataTable->FindRow<FCCTowerData>(TowerRowName, TEXT("ReloadData"));
+        FName RowName = FName(*FString::FromInt(CurrentLevel));
+        const FCCTowerData* Data = TowerDataTable->FindRow<FCCTowerData>(RowName, TEXT("ReloadData"));
         if (Data)
         {
             TowerData = *Data;

@@ -48,6 +48,4 @@ public:
 
 	UPROPERTY(VisibleAnywhere)
 	FCCTowerData TowerData;
-
-	FName TowerRowName = "1";
 };

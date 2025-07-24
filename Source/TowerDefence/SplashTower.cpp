@@ -15,7 +15,8 @@ void ASplashTower::BeginPlay()
 
     if (TowerDataTable)
     {
-        const FSplashTowerData* Data = TowerDataTable->FindRow<FSplashTowerData>(TowerRowName, TEXT("TowerData Lookup"));
+        FName RowName = FName(*FString::FromInt(CurrentLevel));
+        const FSplashTowerData* Data = TowerDataTable->FindRow<FSplashTowerData>(RowName, TEXT("TowerData Lookup"));
         if (Data)
         {
             TowerData = *Data;
@@ -40,12 +41,7 @@ int32 ASplashTower::GetBuildCost(int32 Level) const
 
     if (TowerDataTable)
     {
-        FName Row = FName(*FString::FromInt(Level));
-        const FSplashTowerData* Data = TowerDataTable->FindRow<FSplashTowerData>(Row, TEXT("GetBuildCost"));
-        if (Data)
-        {
-            return Data->BuildCost;
-        }
+        return GetRowCost<FSplashTowerData>(TowerDataTable, Level);
     }
 
     return 0;
@@ -55,8 +51,8 @@ void ASplashTower::ReloadData()
 {
     if (TowerDataTable)
     {
-        TowerRowName = FName(*FString::FromInt(CurrentLevel));
-        const FSplashTowerData* Data = TowerDataTable->FindRow<FSplashTowerData>(TowerRowName, TEXT("ReloadData"));
+        FName RowName = FName(*FString::FromInt(CurrentLevel));
+        const FSplashTowerData* Data = TowerDataTable->FindRow<FSplashTowerData>(RowName, TEXT("ReloadData"));
         if (Data)
         {
             TowerData = *Data;
