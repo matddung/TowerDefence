@@ -63,3 +63,9 @@ TowerDefence/
 ## Blueprint 중심 / C++ 중심 여부
 - **C++ 중심**: 핵심 게임 로직(웨이브/전투/경제/입력)이 C++로 작성
 - **Blueprint 활용**: UI 위젯, 타워/적 BP, 데이터 테이블, 이펙트 등 콘텐츠 구성은 블루프린트/에셋에 의존
+
+## ▶ [Playable Build](https://github.com/matddung/TowerDefence/releases/tag/v1.0)
+Download the playable demo from GitHub Releases.
+
+- Windows 64-bit
+- Approx : 1.7GB
